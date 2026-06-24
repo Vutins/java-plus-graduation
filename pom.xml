@@ -32,20 +32,15 @@
         <grpc.version>1.63.0</grpc.version>
         <spring-cloud-dependencies.version>2023.0.3</spring-cloud-dependencies.version>
         <spring-cloud-starter-circuitbreaker-resilience4j.version>3.1.2</spring-cloud-starter-circuitbreaker-resilience4j.version>
-
-        <!-- MapStruct + Lombok -->
         <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
-        <!-- Добавляем синоним для обратной совместимости, чтобы работало и ${mapstruct.version} -->
         <mapstruct.version>${org.mapstruct.version}</mapstruct.version>
         <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
         <lombok.version>1.18.32</lombok.version>
-
         <postgresql.version>42.7.3</postgresql.version>
-
-        <!-- Плагины -->
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
         <avro-maven-plugin.version>${avro.version}</avro-maven-plugin.version>
         <protobuf-plugin.version>2.4.0</protobuf-plugin.version>
+
     </properties>
 
     <dependencyManagement>
@@ -60,6 +55,11 @@
                 <groupId>org.apache.avro</groupId>
                 <artifactId>avro</artifactId>
                 <version>${avro.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-commons</artifactId>
             </dependency>
 
             <dependency>
