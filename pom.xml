@@ -37,7 +37,7 @@
         <jakarta.validation.version>3.0.2</jakarta.validation.version>
 
         <!-- Spring Cloud versions -->
-        <spring-cloud-dependencies.version>2023.0.3</spring-cloud-dependencies.version>
+        <spring-cloud-dependencies.version>2023.0.4</spring-cloud-dependencies.version>
         <spring-cloud-starter-circuitbreaker-resilience4j.version>3.1.2</spring-cloud-starter-circuitbreaker-resilience4j.version>
 
         <!-- Messaging & Serialization -->
