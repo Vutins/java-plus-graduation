@@ -2,7 +2,7 @@ spring:
   application:
     name: main-service
   config:
-    import: "configserver:http://localhost:8888"
+    import: "configserver:"
   cloud:
     config:
       fail-fast: true
