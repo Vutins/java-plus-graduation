@@ -17,7 +17,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>stats</module>
+        <module>stats-service</module>
         <module>infra</module>
         <module>core</module>
     </modules>
