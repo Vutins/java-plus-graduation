@@ -96,6 +96,7 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+                    <mainClass>ru.practicum.StatsServerApplication</mainClass>
                 </configuration>
             </plugin>
 
