@@ -36,6 +36,7 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+                    <mainClass>ru.practicum.MainServiceApplication</mainClass>
                 </configuration>
             </plugin>
 

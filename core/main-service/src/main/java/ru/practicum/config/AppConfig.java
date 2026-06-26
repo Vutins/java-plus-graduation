@@ -1,4 +1,4 @@
-package ru.practicum;
+package ru.practicum.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
