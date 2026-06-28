@@ -10,8 +10,8 @@ spring:
         max-interval: 6000
         useRandomPolicy: true
       discovery:
-        enable: true
-        serviceId: config-server
+        enabled: true
+        service-id: config-server
 
 eureka:
   client:
