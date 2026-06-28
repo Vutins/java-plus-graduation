@@ -3,9 +3,12 @@ spring:
     name: gateway
   config:
     import: "configserver:"
-
   cloud:
     config:
+      fail-fast: true
+      retry:
+        max-interval: 6000
+        useRandomPolicy: true
       discovery:
         enable: true
         serviceId: config-server
