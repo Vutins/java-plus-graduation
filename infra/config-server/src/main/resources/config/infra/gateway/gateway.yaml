@@ -2,7 +2,7 @@ server:
   port: 8080
 
 spring:
-  application:
+  cloud:
     gateway:
       routes:
         - id: user-admin-route
