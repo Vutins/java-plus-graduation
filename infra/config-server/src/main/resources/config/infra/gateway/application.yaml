@@ -1,7 +1,87 @@
 server:
   port: 8080
 
-  cloud:
-    config:
-      discovery:
-        enable: true
+spring:
+  application:
+    gateway:
+      routes:
+        - id: user-admin-route
+          uri: lb://MAIN-SERVICE
+          predicates:
+            - Path=/admin/users/**
+
+        - id: category-admin-route
+          uri: lb://MAIN-SERVICE
+          predicates:
+            - Path=/admin/categories/**
+
+        - id: category-public-route
+          uri: lb://MAIN-SERVICE
+          predicates:
+            - Path=/categories/**
+
+        - id: compilation-admin-route
+          uri: lb://MAIN-SERVICE
+          predicates:
+            - Path=/admin/compilations/**
+
+        - id: compilation-public-route
+          uri: lb://MAIN-SERVICE
+          predicates:
+            - Path=/compilations/**
+
+        - id: event-admin-route
+          uri: lb://MAIN-SERVICE
+          predicates:
+            - Path=/admin/events/**
+
+        - id: event-private-route
+          uri: lb://MAIN-SERVICE
+          predicates:
+            - Path=/users/*/events/**
+
+        - id: event-public-route
+          uri: lb://MAIN-SERVICE
+          predicates:
+            - Path=/events/**
+
+        - id: request-private-route
+          uri: lb://MAIN-SERVICE
+          predicates:
+            - Path=/users/*/requests/**
+
+        - id: comment-public-route
+          uri: lb://MAIN-SERVICE
+          predicates:
+            - Path=/events/*/comments/**
+
+        - id: comment-private-route
+          uri: lb://MAIN-SERVICE
+          predicates:
+            - Path=/events/*/users/*/comment/**
+
+        - id: comment-admin-route
+          uri: lb://MAIN-SERVICE
+          predicates:
+            - Path=/admin/comments/**
+
+        - id: reaction-route
+          uri: lb://MAIN-SERVICE
+          predicates:
+            - Path=/comments/**
+
+        - id: stats-hit-route
+          uri: lb://STATS-SERVER
+          predicates:
+            - Path=/hit
+
+        - id: stats-stats-route
+          uri: lb://STATS-SERVER
+          predicates:
+            - Path=/stats
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
