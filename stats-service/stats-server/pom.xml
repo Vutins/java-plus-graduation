@@ -15,6 +15,8 @@
     <name>Stats Server</name>
 
     <dependencies>
+
+
         <!-- Eureka-клиент – версия берётся из spring-cloud-dependencies в родителе -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -25,6 +27,11 @@
             <groupId>ru.practicum</groupId>
             <artifactId>stats-dto</artifactId>
             <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-config</artifactId>
         </dependency>
 
         <dependency>
@@ -77,16 +84,11 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- MapStruct – версия берётся из родительского свойства org.mapstruct.version -->
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-config</artifactId>
-        </dependency>
     </dependencies>
 
     <build>
