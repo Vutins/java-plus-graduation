@@ -14,91 +14,74 @@ spring:
       discovery:
         locator:
           enabled: true
+          lowerCaseServiceId: true
 
       routes:
         - id: admin-categories-route
-          uri: lb://main-service
+          uri: lb://MAIN-SERVICE
           predicates:
             - Path=/admin/categories/**
-          filters:
-            - RewritePath=/admin/categories/(?<segment>.*), /admin/categories/$\{segment}
 
         - id: admin-compilations-route
-          uri: lb://main-service
+          uri: lb://MAIN-SERVICE
           predicates:
             - Path=/admin/compilations/**
-          filters:
-            - RewritePath=/admin/compilations/(?<segment>.*), /admin/compilations/$\{segment}
 
         - id: admin-events-route
-          uri: lb://main-service
+          uri: lb://MAIN-SERVICE
           predicates:
             - Path=/admin/events/**
-          filters:
-            - RewritePath=/admin/events/(?<segment>.*), /admin/events/$\{segment}
 
         - id: admin-reviews-route
-          uri: lb://main-service
+          uri: lb://MAIN-SERVICE
           predicates:
             - Path=/admin/reviews/**
-          filters:
-            - RewritePath=/admin/reviews/(?<segment>.*), /admin/reviews/$\{segment}
 
         - id: admin-users-route
-          uri: lb://main-service
+          uri: lb://MAIN-SERVICE
           predicates:
             - Path=/admin/users/**
-          filters:
-            - RewritePath=/admin/users/(?<segment>.*), /admin/users/$\{segment}
 
-        # Маршруты для Private контроллеров
         - id: private-events-route
-          uri: lb://main-service
+          uri: lb://MAIN-SERVICE
           predicates:
-            - Path=/users/{userId}/events/**
-          filters:
-            - RewritePath=/users/(?<userId>\\d+)/events/(?<segment>.*), /users/$\{userId}/events/$\{segment}
+            - Path=/users/*/events/**
 
         - id: private-requests-route
-          uri: lb://main-service
+          uri: lb://MAIN-SERVICE
           predicates:
-            - Path=/users/{userId}/requests/**
-          filters:
-            - RewritePath=/users/(?<userId>\\d+)/requests/(?<segment>.*), /users/$\{userId}/requests/$\{segment}
+            - Path=/users/*/requests/**
 
         - id: private-reviews-route
-          uri: lb://main-service
+          uri: lb://MAIN-SERVICE
           predicates:
-            - Path=/users/{userId}/reviews/**
-          filters:
-            - RewritePath=/users/(?<userId>\\d+)/reviews/(?<segment>.*), /users/$\{userId}/reviews/$\{segment}
+            - Path=/users/*/reviews/**
 
-        # Маршруты для Public контроллеров
         - id: public-categories-route
-          uri: lb://main-service
+          uri: lb://MAIN-SERVICE
           predicates:
             - Path=/categories/**
-          filters:
-            - RewritePath=/categories/(?<segment>.*), /categories/$\{segment}
 
         - id: public-compilations-route
-          uri: lb://main-service
+          uri: lb://MAIN-SERVICE
           predicates:
             - Path=/compilations/**
-          filters:
-            - RewritePath=/compilations/(?<segment>.*), /compilations/$\{segment}
 
         - id: public-events-route
-          uri: lb://main-service
+          uri: lb://MAIN-SERVICE
           predicates:
             - Path=/events/**
-          filters:
-            - RewritePath=/events/(?<segment>.*), /events/$\{segment}
 
         - id: public-reviews-route
-          uri: lb://main-service
+          uri: lb://MAIN-SERVICE
           predicates:
             - Path=/reviews/**
-          filters:
-            - RewritePath=/reviews/(?<segment>.*), /reviews/$\{segment}
 
+management:
+  endpoint:
+    gateway:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
