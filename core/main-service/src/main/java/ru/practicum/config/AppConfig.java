@@ -1,31 +1,34 @@
 package ru.practicum.config;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
+import ru.practicum.StatsClient;
+
+import java.time.Duration;
 
 @Configuration
 public class AppConfig {
 
-    @Value("${client.url}")
-    private String baseUrl;
-
-    @Value("${client.connect-timeout:5000}")
-    private int connectTimeout;
-
-    @Value("${client.read-timeout:10000}")
-    private int readTimeout;
+    @Bean
+    @LoadBalanced
+    public RestClient.Builder loadBalancedRestClientBuilder() {
+        return RestClient.builder();
+    }
 
     @Bean
-    public RestClient restClient() {
-        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
-        factory.setConnectTimeout(connectTimeout);
-        factory.setReadTimeout(readTimeout);
+    public StatsClient statsClient(@LoadBalanced RestClient.Builder restClientBuilder) {
+        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+        requestFactory.setConnectTimeout((int) Duration.ofSeconds(5).toMillis());
+        requestFactory.setReadTimeout((int) Duration.ofSeconds(5).toMillis());
 
-        return RestClient.builder()
-                .baseUrl(baseUrl)
+        RestClient restClient = restClientBuilder
+                .baseUrl("http://stats-server")
+                .requestFactory(requestFactory)
                 .build();
+
+        return new StatsClient(restClient);
     }
 }
