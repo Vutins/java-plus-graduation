@@ -3,23 +3,13 @@ server:
 
 spring:
   datasource:
+    url: jdbc:postgresql://main-service-db:5432/main
+    username: dbuser
+    password: 12345
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/main
-    username: main
-    password: main
-    initialization-mode: always
+
   jpa:
     hibernate:
       ddl-auto: create-drop
+      dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: false
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-        formate_sql: true
-  sql:
-    init:
-      mode: always
-
-client:
-  url: http://localhost:9090
-
