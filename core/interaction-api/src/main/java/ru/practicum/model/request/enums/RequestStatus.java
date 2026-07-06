@@ -1,4 +1,4 @@
-package ru.practicum.request.enums;
+package ru.practicum.model.request.enums;
 
 public enum RequestStatus {
     PENDING,

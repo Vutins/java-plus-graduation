@@ -18,6 +18,8 @@
         <module>interaction-api</module>
         <module>comment-service</module>
         <module>compilation-service</module>
+        <module>request-service</module>
+        <module>event-service</module>
     </modules>
 
     <properties>

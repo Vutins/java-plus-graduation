@@ -1,16 +1,17 @@
-package ru.practicum.request.dto;
+package ru.practicum.model.request.dto;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.List;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class EventRequestStatusUpdateRequest {
-    List<Long> requestIds;
+public class ParticipationRequestDto {
+    String created;
+    Long event;
+    Long id;
+    Long requester;
     String status;
 }

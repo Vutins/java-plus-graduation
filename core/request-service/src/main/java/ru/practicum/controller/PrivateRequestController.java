@@ -1,4 +1,4 @@
-package ru.practicum.request.controller;
+package ru.practicum.controller;
 
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;

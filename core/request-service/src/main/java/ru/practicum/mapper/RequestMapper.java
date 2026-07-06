@@ -1,4 +1,4 @@
-package ru.practicum.request.mapper;
+package ru.practicum.mapper;
 
 import org.springframework.stereotype.Component;
 import ru.practicum.event.entity.Event;
