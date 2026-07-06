@@ -11,8 +11,13 @@
 
     <packaging>pom</packaging>
     <artifactId>core</artifactId>
+
     <modules>
         <module>main-service</module>
+        <module>category-service</module>
+        <module>interaction-api</module>
+        <module>comment-service</module>
+        <module>comment-service</module>
     </modules>
 
     <properties>
@@ -70,6 +75,11 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
 
         <dependency>
