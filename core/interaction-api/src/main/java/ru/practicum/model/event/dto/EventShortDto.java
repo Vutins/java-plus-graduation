@@ -1,0 +1,22 @@
+package ru.practicum.model.event.dto;
+
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+import ru.practicum.model.category.dto.CategoryDto;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class EventShortDto {
+    Long id;
+    String annotation;
+    CategoryDto category;
+    Long confirmedRequests;
+    String eventDate;
+    UserShortDto initiator;
+    Boolean paid;
+    String title;
+    Long views;
+}

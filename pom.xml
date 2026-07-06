@@ -20,6 +20,8 @@
         <module>stats-service</module>
         <module>infra</module>
         <module>core</module>
+        <module>core/event-service</module>
+        <module>core/request-service</module>
     </modules>
 
     <properties>
