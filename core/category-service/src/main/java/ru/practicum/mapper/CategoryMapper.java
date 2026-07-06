@@ -1,10 +1,11 @@
-package ru.practicum.category.mapper;
+package ru.practicum.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import ru.practicum.category.dto.CategoryDto;
-import ru.practicum.category.dto.CategoryRequestDto;
-import ru.practicum.category.entity.Category;
+import ru.practicum.entity.Category;
+import ru.practicum.model.category.dto.CategoryDto;
+import ru.practicum.model.category.dto.CategoryRequestDto;
+
 
 @Mapper(componentModel = "spring")
 public interface CategoryMapper {

@@ -1,7 +1,7 @@
-package ru.practicum.category.service;
+package ru.practicum.service;
 
-import ru.practicum.category.dto.CategoryDto;
-import ru.practicum.category.dto.CategoryRequestDto;
+import ru.practicum.model.category.dto.CategoryDto;
+import ru.practicum.model.category.dto.CategoryRequestDto;
 
 public interface CategoryAdminService {
 

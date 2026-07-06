@@ -1,4 +1,4 @@
-package ru.practicum.category.dto;
+package ru.practicum.model.category.dto;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

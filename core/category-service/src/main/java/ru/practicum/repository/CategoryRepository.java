@@ -1,8 +1,8 @@
-package ru.practicum.category.repository;
+package ru.practicum.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import ru.practicum.category.entity.Category;
+import ru.practicum.entity.Category;
 
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long> {

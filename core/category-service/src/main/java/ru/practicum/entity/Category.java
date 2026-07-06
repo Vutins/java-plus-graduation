@@ -1,4 +1,4 @@
-package ru.practicum.category.entity;
+package ru.practicum.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
