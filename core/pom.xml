@@ -20,6 +20,7 @@
         <module>compilation-service</module>
         <module>request-service</module>
         <module>event-service</module>
+        <module>user-service</module>
     </modules>
 
     <properties>
