@@ -1,11 +1,7 @@
-package ru.practicum.compilation.mapper;
+package ru.practicum.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import ru.practicum.compilation.dto.CompilationDto;
-import ru.practicum.compilation.dto.NewCompilationDto;
-import ru.practicum.compilation.entity.Compilation;
-import ru.practicum.event.mapper.EventMapper;
 
 @Mapper(componentModel = "spring", uses = {EventMapper.class})
 public interface CompilationMapper {

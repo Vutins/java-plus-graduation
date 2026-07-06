@@ -1,4 +1,4 @@
-package ru.practicum.compilation.entity;
+package ru.practicum.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,7 +14,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.event.entity.Event;
 
 import java.util.ArrayList;
 import java.util.List;

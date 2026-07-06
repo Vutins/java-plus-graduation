@@ -1,4 +1,4 @@
-package ru.practicum.compilation.dto;
+package ru.practicum.model.compilation.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
