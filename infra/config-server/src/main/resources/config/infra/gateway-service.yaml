@@ -14,24 +14,24 @@ server:
 
       routes:
         - id: admin-categories-route
-          uri: lb://MAIN-SERVICE
+          uri: lb://CATEGORY-SERVICE
           predicates:
             - Path=/admin/categories/**
 
         - id: admin-compilations-route
-          uri: lb://MAIN-SERVICE
+          uri: lb://COMPILATION-SERVICE
           predicates:
             - Path=/admin/compilations/**
 
         - id: admin-events-route
-          uri: lb://MAIN-SERVICE
+          uri: lb://EVENT-SERVICE
           predicates:
             - Path=/admin/events/**
 
-        - id: admin-reviews-route
-          uri: lb://MAIN-SERVICE
+        - id: admin-comments-route
+          uri: lb://COMMENT-SERVICE
           predicates:
-            - Path=/admin/reviews/**
+            - Path=/admin/comments/**
 
         - id: admin-users-route
           uri: lb://MAIN-SERVICE

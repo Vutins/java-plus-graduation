@@ -3,6 +3,7 @@ package ru.practicum.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import ru.practicum.model.event.enums.State;
 
 import java.time.LocalDateTime;
 
@@ -20,19 +21,21 @@ public class Event {
     @Column(name = "id")
     Long id;
 
-    @Column(name = "annotation", nullable = false, columnDefinition = "VARCHAR(2000)")
+    @Column(name = "annotation",
+            nullable = false,
+            columnDefinition = "VARCHAR(2000)")
     String annotation;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
-    Category category;
+    Long categoryId;
 
     @Column(name = "created_on")
     LocalDateTime createdOn;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "initiator_id", nullable = false)
-    User initiator;
+    Long initiator;
 
     @Embedded
     Location location;

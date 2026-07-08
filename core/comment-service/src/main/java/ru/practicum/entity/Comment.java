@@ -19,26 +19,30 @@ import java.time.LocalDateTime;
 public class Comment {
 
     @Id
-    @Column(name = "id")
+    @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "commentator_id", nullable = false, foreignKey = @ForeignKey(name = "fk_comments_users"))
-    User commentator;
+    @JoinColumn(name = "commentator_id",
+            nullable = false,
+            foreignKey = @ForeignKey(name = "fk_comments_users"))
+    Long commentatorId;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_id", nullable = false, foreignKey = @ForeignKey(name = "fk_comments_events"))
-    Event event;
+    @JoinColumn(name = "event_id",
+            nullable = false,
+            foreignKey = @ForeignKey(name = "fk_comments_events"))
+    Long eventId;
 
     @NotNull
     @PastOrPresent
-    @Column(name = "created")
+    @Column(name = "created", nullable = false)
     LocalDateTime created;
 
-    @Column(name = "text")
+    @Column(name = "text", nullable = false)
     @NotBlank(message = "текст комментария не может быть пустым")
     String text;
 }

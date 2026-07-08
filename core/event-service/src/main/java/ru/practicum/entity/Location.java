@@ -5,12 +5,13 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Data
+@Embeddable
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "locations")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Embeddable
 public class Location {
+
     @Column(name = "lat", nullable = false)
     Float lat;
 

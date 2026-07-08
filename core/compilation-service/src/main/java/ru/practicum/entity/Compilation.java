@@ -1,30 +1,20 @@
 package ru.practicum.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Data
 @Entity
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "compilations")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Compilation {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -36,11 +26,12 @@ public class Compilation {
     @Column(name = "title", unique = true, nullable = false, length = 50)
     String title;
 
-    @ManyToMany
-    @JoinTable(
+    @ElementCollection(targetClass = Locale.class)
+    @CollectionTable(
             name = "compilations_events",
-            joinColumns = @JoinColumn(name = "compilation_id"),
-            inverseJoinColumns = @JoinColumn(name = "event_id")
+            joinColumns = @JoinColumn(name = "compilation_id")
     )
-    List<Event> events = new ArrayList<>();
+    @Builder.Default
+    @Column(name = "event_id")
+    Set<Long> events = new HashSet<>();
 }

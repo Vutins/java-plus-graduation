@@ -18,6 +18,7 @@ import ru.practicum.entityparam.PublicEventParam;
 import ru.practicum.exception.ConflictException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.mapper.EventMapper;
+import ru.practicum.model.category.client.CategoryServiceClient;
 import ru.practicum.model.event.dto.EventFullDto;
 import ru.practicum.model.event.dto.EventShortDto;
 import ru.practicum.model.event.dto.NewEventDto;
@@ -45,7 +46,7 @@ public class EventServiceImpl implements EventService {
 
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
-    private final CategoryRepository categoryRepository;
+    private final CategoryServiceClient categoryServiceClient;
     private final RequestRepository requestRepository;
     private final EventMapper eventMapper;
     private final StatsClient statsClient;
@@ -252,7 +253,7 @@ public class EventServiceImpl implements EventService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("Пользователя с id = %d не существует.", userId)));
 
-        Category category = categoryRepository.findById(newEventDto.getCategory())
+        Category category = categoryServiceClient.getCategoryById(newEventDto.getCategory())
                 .orElseThrow(() -> new NotFoundException(String.format("Категории с id = %d не существует.", newEventDto.getCategory())));
 
         Event event = eventMapper.toEntity(newEventDto, user, category);
@@ -329,7 +330,7 @@ public class EventServiceImpl implements EventService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         if (patchEventDto.getCategory() != null) {
-            Category category = categoryRepository.findById(patchEventDto.getCategory())
+            Category category = categoryServiceClient.getCategoryById(patchEventDto.getCategory())
                     .orElseThrow(() -> new NotFoundException(String.format("Категории с id = %d не существует.", patchEventDto.getCategory())));
             event.setCategory(category);
         }

@@ -16,12 +16,12 @@ import lombok.experimental.FieldDefaults;
 public class Category {
 
     @Id
-    @Column(name = "id")
+    @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
     @NotNull
     @NotBlank
-    @Column(name = "name")
+    @Column(name = "name", nullable = false, unique = true)
     String name;
 }

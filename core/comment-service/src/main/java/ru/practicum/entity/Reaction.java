@@ -28,11 +28,11 @@ public class Reaction {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comment_id", nullable = false)
-    Comment comment;
+    Long commentId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "evaluator_id", nullable = false)
-    User evaluator;
+    Long evaluatorId;
 
     @CreationTimestamp
     @Column(name = "created_time")

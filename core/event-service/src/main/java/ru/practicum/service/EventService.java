@@ -1,6 +1,12 @@
 package ru.practicum.service;
 
 import jakarta.servlet.http.HttpServletRequest;
+import ru.practicum.entityparam.AdminEventParam;
+import ru.practicum.entityparam.PublicEventParam;
+import ru.practicum.model.event.dto.EventFullDto;
+import ru.practicum.model.event.dto.EventShortDto;
+import ru.practicum.model.event.dto.NewEventDto;
+import ru.practicum.model.event.dto.PatchEventDto;
 
 import java.util.List;
 
