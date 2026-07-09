@@ -2,6 +2,8 @@ package ru.practicum.model.event.dto;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import ru.practicum.model.category.dto.CategoryDto;
+import ru.practicum.user.dto.UserShortDto;
 
 @Data
 @AllArgsConstructor

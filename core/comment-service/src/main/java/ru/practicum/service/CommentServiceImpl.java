@@ -17,6 +17,8 @@ import ru.practicum.mapper.ReactionMapper;
 import ru.practicum.model.comment.dto.*;
 import ru.practicum.model.comment.enums.CommentsSortType;
 import ru.practicum.model.comment.enums.DirectionSortType;
+import ru.practicum.model.event.client.EventServiceClient;
+import ru.practicum.model.event.dto.EventShortDto;
 import ru.practicum.model.user.client.UserServiceClient;
 import ru.practicum.repository.CommentRepository;
 import ru.practicum.repository.ReactionRepository;
@@ -24,6 +26,7 @@ import ru.practicum.repository.ReactionRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import ru.practicum.user.dto.UserDto;
 
 @Slf4j
 @Service
@@ -33,7 +36,7 @@ public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
     private final UserServiceClient userServiceClient;
-    private final EventRepository eventRepository;
+    private final EventServiceClient eventServiceClient;
     private final CommentMapper commentMapper;
     private final ReactionRepository reactionRepository;
     private final ReactionMapper reactionMapper;
@@ -44,12 +47,12 @@ public class CommentServiceImpl implements CommentService {
         log.info("Создание комментария: commentatorId={}, eventId={}",
                 commentatorId, eventId);
 
-        Long commentator = userServiceClient.findById(commentatorId).orElseThrow(() -> {
+        UserDto commentator = userServiceClient.findById(commentatorId).orElseThrow(() -> {
             log.warn("Пользователь с id={} не найден при создании комментария", commentatorId);
             return new NotFoundException("Пользователь с id = " + commentatorId + " не найден");
         });
 
-        Event event = eventRepository.findById(eventId).orElseThrow(() -> {
+        EventShortDto event = eventServiceClient.findById(eventId).orElseThrow(() -> {
             log.warn("Событие с id={} не найдено при создании комментария", eventId);
             return new NotFoundException("мероприятия с id = " + eventId + " не существует");
         });

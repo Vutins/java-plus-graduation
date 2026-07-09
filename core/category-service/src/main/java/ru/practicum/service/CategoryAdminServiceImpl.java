@@ -11,6 +11,7 @@ import ru.practicum.exception.ValidationException;
 import ru.practicum.mapper.CategoryMapper;
 import ru.practicum.model.category.dto.CategoryDto;
 import ru.practicum.model.category.dto.CategoryRequestDto;
+import ru.practicum.model.event.client.EventServiceClient;
 import ru.practicum.repository.CategoryRepository;
 
 @Slf4j
@@ -21,7 +22,7 @@ public class CategoryAdminServiceImpl implements CategoryAdminService {
 
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
-    private final EventRepository eventRepository;
+    private final EventServiceClient eventServiceClient;
 
     private static final int MAX_NAME_LENGTH = 50;
     private static final int MIN_NAME_LENGTH = 1;
@@ -78,9 +79,7 @@ public class CategoryAdminServiceImpl implements CategoryAdminService {
             throw new NotFoundException("категория с id = " + id + " не найдена");
         }
 
-        if (eventRepository.existsByCategoryId(id)) {
-            throw new ConflictException("удаление не возможно пока существуют события с этой категорией");
-        }
+        eventServiceClient.existsByCategoryId(id);
 
         categoryRepository.deleteById(id);
         log.info("категория с id = {} удалена", id);

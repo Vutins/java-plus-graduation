@@ -2,10 +2,15 @@ package ru.practicum.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.entityparam.PublicEventParam;
+import ru.practicum.model.event.dto.EventFullDto;
+import ru.practicum.model.event.dto.EventShortDto;
+import ru.practicum.service.EventService;
 
 import java.util.List;
 
@@ -37,5 +42,15 @@ public class PublicEventController {
     @GetMapping("/{id}")
     public ResponseEntity<EventFullDto> findEventById(@PathVariable @Min(1) Long id, HttpServletRequest httpServletRequest) {
         return ResponseEntity.ok(eventService.findEventById(id, httpServletRequest));
+    }
+
+    @GetMapping("/client/validate/category/{categoryId}")
+    public void existsByCategoryId(@PathVariable @Positive Long categoryId) {
+        eventService.existsByCategoryId(categoryId);
+    }
+
+    @GetMapping("/client/full/{id}")
+    public EventFullDto fullDtoFindById(@PathVariable @Positive Long id) {
+        eventService.findEventById(id);
     }
 }

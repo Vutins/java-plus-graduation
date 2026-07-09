@@ -370,4 +370,10 @@ public class EventServiceImpl implements EventService {
             event.setTitle(patchEventDto.getTitle());
         }
     }
+
+    public void existsByCategoryId(Long categoryId) {
+        if (eventRepository.existsByCategoryId(categoryId)) {
+            throw new ConflictException("удаление не возможно пока существуют события с этой категорией");
+        }
+    }
 }

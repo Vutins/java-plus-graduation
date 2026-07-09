@@ -4,6 +4,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.entity.Compilation;
+import ru.practicum.exception.ConflictException;
+import ru.practicum.exception.NotFoundException;
+import ru.practicum.mapper.CompilationMapper;
+import ru.practicum.model.compilation.dto.CompilationDto;
+import ru.practicum.model.compilation.dto.NewCompilationDto;
+import ru.practicum.model.compilation.dto.UpdateCompilationRequest;
+import ru.practicum.repository.CompilationRepository;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,6 +24,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class CompilationServiceImpl implements CompilationService {
+
     private final CompilationRepository compilationRepository;
     private final EventRepository eventRepository;
     private final CompilationMapper compilationMapper;
