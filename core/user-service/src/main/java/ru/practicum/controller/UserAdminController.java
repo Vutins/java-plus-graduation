@@ -1,15 +1,16 @@
 package ru.practicum.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.service.UserAdminService;
 import ru.practicum.user.dto.UserDto;
 import ru.practicum.user.dto.UserRequestDto;
-import ru.practicum.user.service.UserAdminService;
 
 import java.util.List;
 
@@ -42,5 +43,11 @@ public class UserAdminController {
         log.info("запрос на удаление пользователя: UserController");
         userAdminService.deleteUser(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserDto> getUserById(@PathVariable @Positive Long id) {
+        log.info("запрос на получение пользователя по id");
+        return ResponseEntity.ok(userAdminService.getUserById(id));
     }
 }
