@@ -5,6 +5,7 @@ import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
+import ru.practicum.entity.Event;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

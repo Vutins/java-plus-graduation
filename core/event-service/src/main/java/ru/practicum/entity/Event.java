@@ -35,7 +35,7 @@ public class Event {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "initiator_id", nullable = false)
-    Long initiator;
+    Long initiatorId;
 
     @Embedded
     Location location;

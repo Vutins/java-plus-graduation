@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.validator.constraints.Length;
+import ru.practicum.entity.LocationDto;
 
 @Data
 @AllArgsConstructor
@@ -25,7 +26,7 @@ public class PatchEventDto {
     @FutureOrPresent
     String eventDate;
 
-    Location location;
+    LocationDto location;
 
     Boolean paid;
 

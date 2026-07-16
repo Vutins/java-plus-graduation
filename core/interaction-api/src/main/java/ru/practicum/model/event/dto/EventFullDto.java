@@ -2,6 +2,7 @@ package ru.practicum.model.event.dto;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import ru.practicum.entity.LocationDto;
 import ru.practicum.model.category.dto.CategoryDto;
 import ru.practicum.user.dto.UserShortDto;
 
@@ -19,7 +20,7 @@ public class EventFullDto {
     String eventDate;
     Long id;
     UserShortDto initiator;
-    Location location;
+    LocationDto location;
     Boolean paid;
     Integer participantLimit;
     String publishedOn;

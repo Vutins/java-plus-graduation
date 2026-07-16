@@ -13,29 +13,31 @@ import ru.practicum.EndpointHitDto;
 import ru.practicum.StatsClient;
 import ru.practicum.ViewStatsDto;
 import ru.practicum.entity.Event;
+import ru.practicum.entity.Location;
 import ru.practicum.entityparam.AdminEventParam;
 import ru.practicum.entityparam.PublicEventParam;
 import ru.practicum.exception.ConflictException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.mapper.EventMapper;
 import ru.practicum.model.category.client.CategoryServiceClient;
+import ru.practicum.model.category.dto.CategoryDto;
 import ru.practicum.model.event.dto.EventFullDto;
 import ru.practicum.model.event.dto.EventShortDto;
 import ru.practicum.model.event.dto.NewEventDto;
 import ru.practicum.model.event.dto.PatchEventDto;
 import ru.practicum.model.event.enums.SortType;
 import ru.practicum.model.event.enums.State;
+import ru.practicum.model.user.client.UserServiceClient;
 import ru.practicum.repository.EventRepository;
 import ru.practicum.specification.AdminEventSpecification;
 import ru.practicum.specification.EventSpecification;
 import ru.practicum.specification.PublicEventSpecification;
+import ru.practicum.user.dto.UserShortDto;
+import ru.practicum.user.dto.UserDto;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -45,9 +47,9 @@ import java.util.stream.Collectors;
 public class EventServiceImpl implements EventService {
 
     private final EventRepository eventRepository;
-    private final UserRepository userRepository;
+    private final UserServiceClient userServiceClient;
     private final CategoryServiceClient categoryServiceClient;
-    private final RequestRepository requestRepository;
+    private final RequestServiceClient requestServiceClient;
     private final EventMapper eventMapper;
     private final StatsClient statsClient;
 
@@ -129,7 +131,7 @@ public class EventServiceImpl implements EventService {
 
         log.info("Получаем количество просмотров.");
         eventFullDto.setViews(getStats(event));
-        eventFullDto.setConfirmedRequests(requestRepository.countConfirmedRequestsByEventId(id));
+        eventFullDto.setConfirmedRequests(requestServiceClient.countConfirmedRequestsByEventId(id));
         return eventFullDto;
     }
 
@@ -170,7 +172,7 @@ public class EventServiceImpl implements EventService {
             }
         }
 
-        eventFullDto.setConfirmedRequests(requestRepository.countConfirmedRequestsByEventId(id));
+        eventFullDto.setConfirmedRequests(requestServiceClient.countConfirmedRequestsByEventId(id));
 
         return eventFullDto;
     }
@@ -178,7 +180,7 @@ public class EventServiceImpl implements EventService {
     @Transactional
     @Override
     public EventFullDto patchEventByUser(Long userId, Long eventId, PatchEventDto patchEventDto) {
-        if (!userRepository.existsById(userId)) {
+        if (!userServiceClient.existsById(userId)) {
             throw new NotFoundException(String.format("Пользователя с id = %d не существует.", userId));
         }
 
@@ -215,7 +217,7 @@ public class EventServiceImpl implements EventService {
     @Transactional(readOnly = true)
     @Override
     public List<EventShortDto> findEventsBy(Long userId, Integer from, Integer size) {
-        if (!userRepository.existsById(userId)) {
+        if (!userServiceClient.existsById(userId)) {
             throw new NotFoundException(String.format("Пользователя с id = %d не существует.", userId));
         }
 
@@ -231,7 +233,7 @@ public class EventServiceImpl implements EventService {
     @Transactional(readOnly = true)
     @Override
     public EventFullDto findEventByIdAndUser(Long userId, Long eventId) {
-        if (!userRepository.existsById(userId)) {
+        if (!userServiceClient.existsById(userId)) {
             throw new NotFoundException(String.format("Пользователя с id = %d не существует.", userId));
         }
 
@@ -250,13 +252,11 @@ public class EventServiceImpl implements EventService {
     @Transactional
     @Override
     public EventFullDto saveNewEvent(Long userId, NewEventDto newEventDto) {
-        User user = userRepository.findById(userId)
+        UserDto user = userServiceClient.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("Пользователя с id = %d не существует.", userId)));
 
-        Category category = categoryServiceClient.getCategoryById(newEventDto.getCategory())
-                .orElseThrow(() -> new NotFoundException(String.format("Категории с id = %d не существует.", newEventDto.getCategory())));
-
-        Event event = eventMapper.toEntity(newEventDto, user, category);
+        CategoryDto category = categoryServiceClient.getCategoryById(newEventDto.getCategory());
+        Event event = eventMapper.toEntity(newEventDto, user.getId(), category.getId());
         Event createdEvent = eventRepository.save(event);
 
         return eventMapper.toFullDto(createdEvent);
@@ -269,7 +269,7 @@ public class EventServiceImpl implements EventService {
 
         List<Long> eventsIds = events.stream().map(Event::getId).toList();
 
-        List<Object[]> results = requestRepository.countConfirmedRequestsForEvents(eventsIds);
+        List<Object[]> results = requestServiceClient.countConfirmedRequestsForEvents(eventsIds);
 
         return results.stream()
                 .collect(Collectors.toMap(
@@ -323,16 +323,15 @@ public class EventServiceImpl implements EventService {
 
         Pattern pattern = Pattern.compile("/events/(\\d+)");
         return stats.stream().collect(Collectors.toMap(s ->
-               Long.parseLong(String.valueOf(pattern.matcher(s.getUri()).find())), ViewStatsDto::getHits));
+                Long.parseLong(String.valueOf(pattern.matcher(s.getUri()).find())), ViewStatsDto::getHits));
     }
 
     private void patchFieldValidation(Event event, PatchEventDto patchEventDto) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         if (patchEventDto.getCategory() != null) {
-            Category category = categoryServiceClient.getCategoryById(patchEventDto.getCategory())
-                    .orElseThrow(() -> new NotFoundException(String.format("Категории с id = %d не существует.", patchEventDto.getCategory())));
-            event.setCategory(category);
+            CategoryDto category = categoryServiceClient.getCategoryById(patchEventDto.getCategory());
+            event.setCategoryId(category.getId());
         }
 
         if (patchEventDto.getLocation() != null) {
@@ -375,5 +374,60 @@ public class EventServiceImpl implements EventService {
         if (eventRepository.existsByCategoryId(categoryId)) {
             throw new ConflictException("удаление не возможно пока существуют события с этой категорией");
         }
+    }
+
+    @Override
+    public void validateCategoryHasNoEvents(Long categoryId) {
+        if (eventRepository.existsByCategoryId(categoryId)) {
+            throw new ConflictException("Category has associated events and cannot be deleted");
+        }
+    }
+
+    @Override
+    public void validateEventExistingById(Long eventId) {
+        if (!eventRepository.existsById(eventId)) {
+            throw new NotFoundException("Ивента с id=" + eventId + " нет в БД!");
+        }
+    }
+
+    @Override
+    public EventShortDto getEventShortDtoByIdClient(Long id) {
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Event with the same id not found"));
+
+        UserShortDto userShortDto = userServiceClient.getUserShortDtoClientById(event.getInitiatorId());
+
+        CategoryDto categoryDto = categoryServiceClient.getCategoryById(event.getCategoryId());
+
+        return eventMapper.toEventShortDto(event, categoryDto, userShortDto);
+    }
+
+    @Override
+    public Set<EventShortDto> getEventShortDtoSetByIds(Set<Long> eventIds) {
+        return eventRepository.findAllByIdIn(eventIds)
+                .stream()
+                .map(event -> {
+                    return eventMapper.toEventShortDto(
+                            event,
+                            categoryServiceClient.getCategoryById(event.getCategoryId()),
+                            userServiceClient.getUserShortDtoClientById(event.getInitiatorId()));
+                })
+                .collect(Collectors.toSet());
+    }
+
+    @Override
+    public EventFullDto getEventFullDtoByIdClient(Long id) {
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Event with the same id not found"));
+
+        UserShortDto userShortDto = userServiceClient.getUserShortDtoClientById(event.getInitiatorId());
+
+        CategoryDto categoryDto = categoryServiceClient.getCategoryById(event.getCategoryId());
+
+        return eventMapper.toEventFullDto(
+                event,
+                categoryDto,
+                userShortDto
+        );
     }
 }

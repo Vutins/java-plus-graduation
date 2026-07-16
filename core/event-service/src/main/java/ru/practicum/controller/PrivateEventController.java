@@ -8,6 +8,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.model.event.dto.EventFullDto;
+import ru.practicum.model.event.dto.EventShortDto;
+import ru.practicum.model.event.dto.NewEventDto;
+import ru.practicum.model.event.dto.PatchEventDto;
+import ru.practicum.model.request.dto.EventRequestStatusUpdateRequest;
+import ru.practicum.model.request.dto.EventRequestStatusUpdateResult;
+import ru.practicum.model.request.dto.ParticipationRequestDto;
+import ru.practicum.service.EventService;
 
 import java.util.List;
 
@@ -18,7 +26,7 @@ import java.util.List;
 public class PrivateEventController {
 
     private final EventService eventService;
-    private final RequestService requestService;
+    private final RequestServiceClient requestServiceClient;
 
     @GetMapping
     public ResponseEntity<List<EventShortDto>> findEventsBy(
@@ -55,7 +63,7 @@ public class PrivateEventController {
     public ResponseEntity<List<ParticipationRequestDto>> findRequestsForEventsByUser(
             @PathVariable @Min(1) Long userId,
             @PathVariable @Min(1) Long eventId) {
-        return ResponseEntity.ok(requestService.getEventParticipants(userId, eventId));
+        return ResponseEntity.ok(requestServiceClient.getEventParticipants(userId, eventId));
     }
 
     @PatchMapping("/{eventId}/requests")
@@ -63,6 +71,6 @@ public class PrivateEventController {
             @PathVariable @Min(1) Long userId,
             @PathVariable @Min(1) Long eventId,
             @RequestBody @NotNull EventRequestStatusUpdateRequest eventRequestStatusUpdateRequest) {
-        return ResponseEntity.ok(requestService.changeRequestStatus(userId, eventId, eventRequestStatusUpdateRequest));
+        return ResponseEntity.ok(requestServiceClient.changeRequestStatus(userId, eventId, eventRequestStatusUpdateRequest));
     }
 }

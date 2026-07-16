@@ -9,6 +9,7 @@ import ru.practicum.model.event.dto.NewEventDto;
 import ru.practicum.model.event.dto.PatchEventDto;
 
 import java.util.List;
+import java.util.Set;
 
 public interface EventService {
 
@@ -29,4 +30,14 @@ public interface EventService {
     EventFullDto saveNewEvent(Long userId, NewEventDto newEventDto);
 
     void existsByCategoryId(Long categoryId);
+
+    EventShortDto getEventShortDtoByIdClient(Long id);
+
+    Set<EventShortDto> getEventShortDtoSetByIds(Set<Long> eventIds);
+
+    EventFullDto getEventFullDtoByIdClient(Long id);
+
+    void validateEventExistingById(Long eventId);
+
+    void validateCategoryHasNoEvents(Long categoryId);
 }

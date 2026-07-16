@@ -6,6 +6,8 @@ import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.validator.constraints.Length;
+import ru.practicum.entity.LocationDto;
+import ru.practicum.model.event.annotations.DateTimeStart;
 
 @Data
 @AllArgsConstructor
@@ -30,7 +32,7 @@ public class NewEventDto {
     String eventDate;
 
     @NotNull(message = "Широта и долгота места проведения события должны быть указаны.")
-    Location location;
+    LocationDto location;
 
     Boolean paid;
 

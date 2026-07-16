@@ -3,6 +3,7 @@ package ru.practicum.model.event.dto;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.model.category.dto.CategoryDto;
+import ru.practicum.user.dto.UserShortDto;
 
 @Data
 @AllArgsConstructor
@@ -10,6 +11,7 @@ import ru.practicum.model.category.dto.CategoryDto;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class EventShortDto {
+
     Long id;
     String annotation;
     CategoryDto category;

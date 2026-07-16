@@ -13,6 +13,7 @@ import ru.practicum.model.event.dto.EventShortDto;
 import ru.practicum.service.EventService;
 
 import java.util.List;
+import java.util.Set;
 
 @Validated
 @RestController
@@ -34,7 +35,7 @@ public class PublicEventController {
             @RequestParam(required = false, defaultValue = "0") Integer from,
             @RequestParam(required = false, defaultValue = "10") Integer size,
             HttpServletRequest httpServletRequest
-            ) {
+    ) {
         PublicEventParam param = new PublicEventParam(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
         return ResponseEntity.ok(eventService.findEventsBy(param, httpServletRequest));
     }
@@ -50,7 +51,33 @@ public class PublicEventController {
     }
 
     @GetMapping("/client/full/{id}")
-    public EventFullDto fullDtoFindById(@PathVariable @Positive Long id) {
-        eventService.findEventById(id);
+    public EventFullDto fullDtoFindById(@PathVariable @Positive Long id, HttpServletRequest httpServletRequest) {
+        return eventService.findEventById(id, httpServletRequest);
     }
+
+    @GetMapping("/client/short/{id}")
+    public EventShortDto getEventShortDtoByIdClient(@PathVariable @Positive Long id) {
+        return eventService.getEventShortDtoByIdClient(id);
+    }
+
+    @GetMapping("/client/full/{id}")
+    EventFullDto getEventFullDtoByIdClient(@PathVariable @Positive Long id) {
+        return eventService.getEventFullDtoByIdClient(id);
+    }
+
+    @GetMapping("/client/validate/{eventId}")
+    public void validateEventExistingById(@PathVariable @Positive Long eventId) {
+        eventService.validateEventExistingById(eventId);
+    }
+
+    @GetMapping("/client/validate/category/{categoryId}")
+    public void validateCategoryHasNoEvents(@PathVariable @Positive Long categoryId) {
+        eventService.validateCategoryHasNoEvents(categoryId);
+    }
+
+    @GetMapping("/client/find/all")
+    public Set<EventShortDto> getEventShortDtoSetByIds(@RequestParam Set<Long> eventIds) {
+        return eventService.getEventShortDtoSetByIds(eventIds);
+    }
+
 }

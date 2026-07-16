@@ -2,6 +2,11 @@ package ru.practicum.mapper;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import ru.practicum.entity.Event;
+import ru.practicum.model.event.dto.EventFullDto;
+import ru.practicum.model.event.dto.EventShortDto;
+import ru.practicum.model.event.dto.NewEventDto;
+import ru.practicum.model.event.enums.State;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -12,18 +17,17 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class EventMapper {
 
-    private final CategoryMapper categoryMapper;
-    private final UserMapper userMapper;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private final LocationMapper locationMapper;
 
     public EventFullDto toFullDto(Event event) {
         EventFullDto eventFullDto = EventFullDto.builder()
                 .id(event.getId())
                 .annotation(event.getAnnotation())
-                .category(categoryMapper.toCategoryDto(event.getCategory()))
+                .categoryId(event.getCategoryId())
                 .description(event.getDescription())
-                .initiator(userMapper.toUserShortDto(event.getInitiator()))
-                .location(event.getLocation())
+                .initiatorId(event.getInitiatorId())
+                .locationDto(locationMapper.toDto(event.getLocation()))
                 .paid(event.getPaid())
                 .participantLimit(event.getParticipantLimit())
                 .requestModeration(event.getRequestModeration())
@@ -74,20 +78,20 @@ public class EventMapper {
         return EventShortDto.builder()
                 .id(event.getId())
                 .annotation(event.getAnnotation())
-                .category(categoryMapper.toCategoryDto(event.getCategory()))
+                .category(categoryMapper.toCategoryDto(event.getCategoryId()))
                 .eventDate(formatter.format(event.getEventDate()))
-                .initiator(userMapper.toUserShortDto(event.getInitiator()))
+                .initiator(userMapper.toUserShortDto(event.getInitiatorId()))
                 .paid(event.getPaid())
                 .title(event.getTitle())
                 .build();
     }
 
-    public Event toEntity(NewEventDto newEventDto, User user, Category category) {
+    public Event toEntity(NewEventDto newEventDto, Long initiatorId, Long categoryId) {
         Event event = Event.builder()
                 .annotation(newEventDto.getAnnotation())
-                .category(category)
-                .initiator(user)
-                .location(newEventDto.getLocation())
+                .categoryId(categoryId)
+                .initiatorId(initiatorId)
+                .location(locationMapper.toLocation(newEventDto.getLocation()))
                 .description(newEventDto.getDescription())
                 .createdOn(LocalDateTime.now())
                 .eventDate(LocalDateTime.parse(newEventDto.getEventDate(), formatter))
