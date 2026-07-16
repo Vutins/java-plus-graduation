@@ -253,4 +253,25 @@ public class CommentServiceImpl implements CommentService {
                 .map(commentMapper::toCommentResponseDto)
                 .toList();
     }
+
+    @Override
+    public CommentDto getCommentById(Long commentId) {
+
+        Comment comment = commentRepository.findByIdAndCommentatorId(commentId)
+                .orElseThrow(() -> new NotFoundException("Юзер с id=" + commentId +
+                        " не писал отзыв с id=" + commentId + "!"));
+
+        userServiceClient.validateUserExistingById(comment.getCommentatorId());
+        return commentMapper.toCommentDto(comment);
+    }
+
+    @Override
+    public List<CommentDto> getCommentsByAuthor(Long userId) {
+        userServiceClient.validateUserExistingById(userId);
+
+        return commentRepository.findAllByCommentatorId(userId)
+                .stream()
+                .map(commentMapper::toCommentDto)
+                .toList();
+    }
 }

@@ -10,7 +10,7 @@ import ru.practicum.StatsClient;
 import java.time.Duration;
 
 @Configuration
-public class AppConfig {
+public class CommentConfig {
 
     @Bean
     @LoadBalanced

@@ -8,6 +8,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import ru.practicum.entity.Comment;
 
+import java.util.List;
+import java.util.Optional;
+
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
@@ -26,4 +29,8 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             "GROUP BY r.comment " +
             "ORDER BY COUNT(r) DESC")
     Slice<Comment> getCommentsByDesc(String voteType, Pageable pageable);
+
+    Optional<Comment> findByIdAndCommentatorId(Long commentId, Long commentatorId);
+
+    List<Comment> findAllByCommentatorId(Long commentatorId);
 }

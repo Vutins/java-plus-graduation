@@ -12,6 +12,8 @@ import ru.practicum.model.comment.dto.CommentDto;
 import ru.practicum.model.comment.dto.CommentRequestDto;
 import ru.practicum.service.CommentService;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/events/{eventId}/users/{commentatorId}/comment")
@@ -45,5 +47,15 @@ public class CommentPrivateController {
             @NotNull @Positive @PathVariable("commentatorId") Long commentatorId,
             @NotNull @Positive @PathVariable("commentId") Long commentId) {
         commentService.delete(eventId, commentId, commentatorId);
+    }
+
+    @GetMapping("/{commentId}")
+    public CommentDto getCommentsById(@Positive @PathVariable Long commentId) {
+        return commentService.getCommentById(commentId);
+    }
+
+    @GetMapping
+    public List<CommentDto> getCommentsByAuthor(@Positive @PathVariable Long userId) {
+        return commentService.getCommentsByAuthor(userId);
     }
 }

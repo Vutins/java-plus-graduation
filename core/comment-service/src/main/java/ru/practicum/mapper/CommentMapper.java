@@ -9,6 +9,7 @@ import ru.practicum.model.comment.dto.CommentResponseDto;
 
 @Mapper(componentModel = "spring")
 public interface CommentMapper {
+
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "created", ignore = true)
     @Mapping(target = "commentator", ignore = true)
@@ -20,4 +21,6 @@ public interface CommentMapper {
     @Mapping(source = "commentator.id", target = "commentatorId")
     @Mapping(source = "event.id", target = "eventId")
     CommentDto toCommentDto(Comment comment);
+
+    CommentResponseDto toCommentResponseDto(CommentDto commentDto);
 }

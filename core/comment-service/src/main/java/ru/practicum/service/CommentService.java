@@ -23,4 +23,8 @@ public interface CommentService {
     CommentStatsResponse getReactionStatsByComment(Long commentId);
 
     List<CommentResponseDto> getCommentsBy(CommentsSortType sort, String direction, Integer from, Integer size);
+
+    CommentDto getCommentById(Long commentId);
+
+    List<CommentDto> getCommentsByAuthor(Long userId);
 }
