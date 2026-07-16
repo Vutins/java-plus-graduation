@@ -180,9 +180,7 @@ public class EventServiceImpl implements EventService {
     @Transactional
     @Override
     public EventFullDto patchEventByUser(Long userId, Long eventId, PatchEventDto patchEventDto) {
-        if (!userServiceClient.existsById(userId)) {
-            throw new NotFoundException(String.format("Пользователя с id = %d не существует.", userId));
-        }
+        userServiceClient.validateUserExistingById(userId);
 
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException(String.format("Событие с id = %d отсутствует.", eventId)));
@@ -217,9 +215,7 @@ public class EventServiceImpl implements EventService {
     @Transactional(readOnly = true)
     @Override
     public List<EventShortDto> findEventsBy(Long userId, Integer from, Integer size) {
-        if (!userServiceClient.existsById(userId)) {
-            throw new NotFoundException(String.format("Пользователя с id = %d не существует.", userId));
-        }
+        userServiceClient.validateUserExistingById(userId);
 
         Pageable pageable = PageRequest.of(from, size);
         List<Event> events = eventRepository.findAll(pageable).getContent();
@@ -395,7 +391,7 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Event with the same id not found"));
 
-        UserShortDto userShortDto = userServiceClient.getUserShortDtoClientById(event.getInitiatorId());
+        UserShortDto userShortDto = userServiceClient.getUserShortById(event.getInitiatorId());
 
         CategoryDto categoryDto = categoryServiceClient.getCategoryById(event.getCategoryId());
 
@@ -410,7 +406,7 @@ public class EventServiceImpl implements EventService {
                     return eventMapper.toEventShortDto(
                             event,
                             categoryServiceClient.getCategoryById(event.getCategoryId()),
-                            userServiceClient.getUserShortDtoClientById(event.getInitiatorId()));
+                            userServiceClient.getUserShortById(event.getInitiatorId()));
                 })
                 .collect(Collectors.toSet());
     }
@@ -420,7 +416,7 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Event with the same id not found"));
 
-        UserShortDto userShortDto = userServiceClient.getUserShortDtoClientById(event.getInitiatorId());
+        UserShortDto userShortDto = userServiceClient.getUserShortById(event.getInitiatorId());
 
         CategoryDto categoryDto = categoryServiceClient.getCategoryById(event.getCategoryId());
 

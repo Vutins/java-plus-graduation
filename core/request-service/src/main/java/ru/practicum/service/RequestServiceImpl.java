@@ -38,9 +38,7 @@ public class RequestServiceImpl implements RequestService {
     public List<ParticipationRequestDto> getUserRequests(Long userId) {
         log.info("Получение всех запросов пользователя с id = {}", userId);
 
-        if (!userServiceClient.existsById(userId)) {
-            throw new NotFoundException(String.format("Пользователь с id = %d не найден", userId));
-        }
+        userServiceClient.validateUserExistingById(userId);
 
         List<ParticipationRequest> requests = requestRepository.findAllByRequesterId(userId);
         return requestMapper.toDtoList(requests);
@@ -55,8 +53,7 @@ public class RequestServiceImpl implements RequestService {
             throw new ValidationException("Параметр eventId отсутствует.");
         }
 
-        UserDto requester = userServiceClient.findById(userId)
-                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id = %d не найден", userId)));
+        UserDto requester = userServiceClient.getUserById(userId);
 
         EventFullDto event = eventServiceClient.findById(eventId)
                 .orElseThrow(() -> new NotFoundException(String.format("Событие с id = %d не найдено", eventId)));
@@ -96,9 +93,7 @@ public class RequestServiceImpl implements RequestService {
     public ParticipationRequestDto cancelRequest(Long userId, Long requestId) {
         log.info("Отмена запроса с id = {} пользователем {}", requestId, userId);
 
-        if (!userServiceClient.existsById(userId)) {
-            throw new NotFoundException(String.format("Пользователь с id = %d не найден", userId));
-        }
+        userServiceClient.validateUserExistingById(userId);
 
         ParticipationRequest request = requestRepository.findById(requestId)
                 .orElseThrow(() -> new NotFoundException(String.format("Запрос с id = %d не найден", requestId)));
@@ -117,9 +112,7 @@ public class RequestServiceImpl implements RequestService {
     public List<ParticipationRequestDto> getEventParticipants(Long userId, Long eventId) {
         log.info("Получение запросов на участие в событии {} для пользователя {}", eventId, userId);
 
-        if (!userServiceClient.existsById(userId)) {
-            throw new NotFoundException(String.format("Пользователь с id = %d не найден", userId));
-        }
+       userServiceClient.validateUserExistingById(userId);
 
         EventFullDto event = eventServiceClient.findById(eventId)
                 .orElseThrow(() -> new NotFoundException(String.format("Событие с id = %d не найдено", eventId)));
@@ -138,9 +131,7 @@ public class RequestServiceImpl implements RequestService {
                                                               EventRequestStatusUpdateRequest request) {
         log.info("Изменение статуса заявок для события {} пользователем {}", eventId, userId);
 
-        if (!userServiceClient.existsById(userId)) {
-            throw new NotFoundException(String.format("Пользователь с id = %d не найден", userId));
-        }
+        userServiceClient.validateUserExistingById(userId);
 
         EventFullDto event = eventServiceClient.findById(eventId)
                 .orElseThrow(() -> new NotFoundException(String.format("Событие с id = %d не найдено", eventId)));

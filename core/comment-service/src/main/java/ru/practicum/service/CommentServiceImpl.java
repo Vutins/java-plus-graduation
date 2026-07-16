@@ -22,6 +22,7 @@ import ru.practicum.model.event.dto.EventShortDto;
 import ru.practicum.model.user.client.UserServiceClient;
 import ru.practicum.repository.CommentRepository;
 import ru.practicum.repository.ReactionRepository;
+import ru.practicum.user.dto.UserShortDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -47,19 +48,16 @@ public class CommentServiceImpl implements CommentService {
         log.info("Создание комментария: commentatorId={}, eventId={}",
                 commentatorId, eventId);
 
-        UserDto commentator = userServiceClient.findById(commentatorId).orElseThrow(() -> {
-            log.warn("Пользователь с id={} не найден при создании комментария", commentatorId);
-            return new NotFoundException("Пользователь с id = " + commentatorId + " не найден");
-        });
+        UserDto commentator = userServiceClient.getUserById(commentatorId);
 
-        EventShortDto event = eventServiceClient.findById(eventId).orElseThrow(() -> {
+        EventShortDto event = eventServiceClient.getById(eventId).orElseThrow(() -> {
             log.warn("Событие с id={} не найдено при создании комментария", eventId);
             return new NotFoundException("мероприятия с id = " + eventId + " не существует");
         });
 
         Comment commentCreate = Comment.builder()
-                .commentator(commentator)
-                .event(event)
+                .commentatorId(commentator.getId())
+                .eventId(event.getId())
                 .created(LocalDateTime.now())
                 .text(commentRequestDto.getText())
                 .build();
@@ -85,9 +83,9 @@ public class CommentServiceImpl implements CommentService {
             return new NotFoundException("комментарий с id = " + commentId + " не найден");
         });
 
-        if (!commentFindById.getCommentator().getId().equals(commentatorId)) {
+        if (!commentFindById.getCommentatorId().equals(commentatorId)) {
             log.warn("Попытка редактирования чужого комментария: commentId={}, commentatorId={}, автор={}",
-                    commentId, commentatorId, commentFindById.getCommentator().getId());
+                    commentId, commentatorId, commentFindById.getCommentatorId());
             throw new ConflictException("редактировать комментарий может только его автор");
         }
 
@@ -104,7 +102,7 @@ public class CommentServiceImpl implements CommentService {
         log.info("Удаление комментария пользователем: eventId={}, commentId={}, userId={}",
                 eventId, commentId, userId);
 
-        Event event = eventRepository.findById(eventId).orElseThrow(() -> {
+        EventShortDto event = eventServiceClient.findById(eventId).orElseThrow(() -> {
             log.warn("Событие с id={} не найдено при удалении комментария", eventId);
             return new NotFoundException("мероприятия с id = " + eventId + " не существует");
         });
@@ -114,12 +112,12 @@ public class CommentServiceImpl implements CommentService {
             return new NotFoundException("комментария с id = " + commentId + " не существует");
         });
 
-        if (!eventId.equals(comment.getEvent().getId())) {
+        if (!eventId.equals(comment.getEventId())) {
             log.warn("Комментарий id={} не относится к событию id={}", commentId, eventId);
             throw new ConflictException("Комментарий с id = " + commentId + " не относится к событию с id = " + eventId);
         }
 
-        if (!comment.getCommentator().getId().equals(userId) && !event.getInitiator().getId().equals(userId)) {
+        if (!comment.getCommentatorId().equals(userId) && !event.getInitiator().getId().equals(userId)) {
             log.warn("Пользователь id={} не является автором и не инициатор события для комментария id={}",
                     userId, commentId);
             throw new ConflictException("комментарий может удалять только его автор или инициатор события");
@@ -148,7 +146,7 @@ public class CommentServiceImpl implements CommentService {
         log.info("Запрос комментариев события: eventId={}, sortOrder={}, from={}, size={}",
                 eventId, sortOrder, from, size);
 
-        if (!eventRepository.existsById(eventId)) {
+        if (!eventServiceClient.existsById(eventId)) {
             log.warn("Событие с id={} не найдено при запросе комментариев", eventId);
             throw new NotFoundException("мероприятия с id = " + eventId + " не существует");
         }
@@ -172,10 +170,7 @@ public class CommentServiceImpl implements CommentService {
         log.info("Добавление реакции: evaluatorId={}, commentId={}, voteType={}",
                 evaluatorId, commentId, voteType);
 
-        User evaluator = userRepository.findById(evaluatorId).orElseThrow(() -> {
-            log.warn("Пользователь с id={} не найден при добавлении реакции", evaluatorId);
-            return new NotFoundException("Пользователь с id = " + evaluatorId + " не найден");
-        });
+        UserShortDto evaluator = userServiceClient.getUserShortById(evaluatorId);
 
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> {
             log.warn("Комментарий с id={} не найден при добавлении реакции", commentId);
@@ -197,8 +192,8 @@ public class CommentServiceImpl implements CommentService {
 
         Reaction reactionForSave = Reaction.builder()
                 .voteType(voteType)
-                .evaluator(evaluator)
-                .comment(comment)
+                .evaluatorId(evaluator.getId())
+                .commentId(comment.getId())
                 .build();
 
         Reaction createdReaction = reactionRepository.save(reactionForSave);
@@ -257,7 +252,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public CommentDto getCommentById(Long commentId) {
 
-        Comment comment = commentRepository.findByIdAndCommentatorId(commentId)
+        Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new NotFoundException("Юзер с id=" + commentId +
                         " не писал отзыв с id=" + commentId + "!"));
 

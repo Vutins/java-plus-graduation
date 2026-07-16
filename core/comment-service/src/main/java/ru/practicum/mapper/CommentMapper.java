@@ -12,14 +12,19 @@ public interface CommentMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "created", ignore = true)
-    @Mapping(target = "commentator", ignore = true)
+    @Mapping(target = "commentatorId", ignore = true)
+    @Mapping(target = "eventId", ignore = true)
     Comment toComment(CommentRequestDto commentRequestDto);
 
-    @Mapping(source = "commentator.id", target = "commentatorId")
+    @Mapping(source = "commentatorId", target = "commentatorId")
+    @Mapping(source = "created", target = "created")
+    @Mapping(source = "text", target = "text")
     CommentResponseDto toCommentResponseDto(Comment comment);
 
-    @Mapping(source = "commentator.id", target = "commentatorId")
-    @Mapping(source = "event.id", target = "eventId")
+    @Mapping(source = "commentatorId", target = "commentatorId")
+    @Mapping(source = "eventId", target = "eventId")
+    @Mapping(source = "created", target = "created")
+    @Mapping(source = "text", target = "text")
     CommentDto toCommentDto(Comment comment);
 
     CommentResponseDto toCommentResponseDto(CommentDto commentDto);
