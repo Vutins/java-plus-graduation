@@ -11,6 +11,8 @@ import ru.practicum.mapper.CompilationMapper;
 import ru.practicum.model.compilation.dto.CompilationDto;
 import ru.practicum.model.compilation.dto.NewCompilationDto;
 import ru.practicum.model.compilation.dto.UpdateCompilationRequest;
+import ru.practicum.model.event.client.EventServiceClient;
+import ru.practicum.model.event.dto.EventShortDto;
 import ru.practicum.repository.CompilationRepository;
 
 import java.util.ArrayList;
@@ -26,7 +28,7 @@ import java.util.stream.Collectors;
 public class CompilationServiceImpl implements CompilationService {
 
     private final CompilationRepository compilationRepository;
-    private final EventRepository eventRepository;
+    private final EventServiceClient eventServiceClient;
     private final CompilationMapper compilationMapper;
 
     @Override
@@ -35,7 +37,7 @@ public class CompilationServiceImpl implements CompilationService {
         log.info("Создание новой подборки: title={}, pinned={}, events={}",
                 newCompilationDto.getTitle(),
                 newCompilationDto.getPinned(),
-                newCompilationDto.getEvents());
+                newCompilationDto.getEventsId());
 
         if (compilationRepository.existsByTitle(newCompilationDto.getTitle())) {
             log.warn("Попытка создать подборку с уже существующим названием: {}", newCompilationDto.getTitle());
@@ -44,10 +46,10 @@ public class CompilationServiceImpl implements CompilationService {
 
         Compilation compilation = compilationMapper.toEntity(newCompilationDto);
 
-        if (newCompilationDto.getEvents() != null && !newCompilationDto.getEvents().isEmpty()) {
-            compilation.setEvents(getEventList(newCompilationDto.getEvents()));
+        if (newCompilationDto.getEventsId() != null && !newCompilationDto.getEventsId().isEmpty()) {
+            compilation.setEventsId(newCompilationDto.getEventsId());
         } else {
-            compilation.setEvents(new ArrayList<>());
+            compilation.setEventsId(new HashSet<>());
             log.debug("Подборка создаётся без событий");
         }
 
@@ -96,8 +98,8 @@ public class CompilationServiceImpl implements CompilationService {
             }
         }
 
-        if (updateCompilationRequest.getEvents() != null) {
-            compilation.setEvents(getEventList(updateCompilationRequest.getEvents()));
+        if (updateCompilationRequest.getEventsId() != null) {
+            compilation.setEventsId(new HashSet<>(updateCompilationRequest.getEventsId()));
         }
 
         compilationRepository.save(compilation);
@@ -142,13 +144,13 @@ public class CompilationServiceImpl implements CompilationService {
                 });
     }
 
-    private List<Event> getEventList(List<Long> eventIds) {
+    private List<EventShortDto> getEventList(List<Long> eventIds) {
         log.debug("Загрузка событий по списку id: {}", eventIds);
-        List<Event> events = eventRepository.findAllById(eventIds);
+        List<EventShortDto> events = eventServiceClient.findAllById(eventIds);
 
         if (events.size() != eventIds.size()) {
             Set<Long> foundIds = events.stream()
-                    .map(Event::getId).collect(Collectors.toSet());
+                    .map(EventShortDto::getId).collect(Collectors.toSet());
             Set<Long> missingIds = new HashSet<>(eventIds);
             missingIds.removeAll(foundIds);
             log.warn("Не найдены события с id: {}", missingIds);

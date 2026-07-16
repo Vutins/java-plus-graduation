@@ -13,7 +13,6 @@
     <artifactId>core</artifactId>
 
     <modules>
-        <module>main-service</module>
         <module>category-service</module>
         <module>interaction-api</module>
         <module>comment-service</module>
