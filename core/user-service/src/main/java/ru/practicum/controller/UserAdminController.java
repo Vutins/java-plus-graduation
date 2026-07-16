@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.service.UserAdminService;
 import ru.practicum.user.dto.UserDto;
 import ru.practicum.user.dto.UserRequestDto;
+import ru.practicum.user.dto.UserShortDto;
 
 import java.util.List;
 
@@ -50,4 +51,16 @@ public class UserAdminController {
         log.info("запрос на получение пользователя по id");
         return ResponseEntity.ok(userAdminService.getUserById(id));
     }
+
+    @GetMapping("client/{userId}")
+     public UserShortDto getUserShortById(@PathVariable @Positive Long id) {
+        return userAdminService.getUserShortById(id);
+    }
+
+    @GetMapping("/client/exist/{userId}")
+    public void validateUserExistingById(@PathVariable Long userId) {
+        userAdminService.validateUserExistingById(userId);
+    }
+
+
 }

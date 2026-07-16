@@ -13,6 +13,7 @@ import ru.practicum.mapper.UserMapper;
 import ru.practicum.repository.UserRepository;
 import ru.practicum.user.dto.UserDto;
 import ru.practicum.user.dto.UserRequestDto;
+import ru.practicum.user.dto.UserShortDto;
 import java.util.List;
 
 @Slf4j
@@ -136,5 +137,20 @@ public class UserAdminServiceImpl implements UserAdminService {
                             MAX_NAME_LENGTH, trimmedName.length())
             );
         }
+    }
+
+    @Override
+    public UserShortDto getUserShortById (Long id) {
+        log.info("вывод пользователя по id = {}", id);
+        User userGetById = userRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("пользователь с id = " + id + " не существует")
+        );
+        return userMapper.toUserShortDto(userGetById);
+    }
+
+    @Override
+    public void validateUserExistingById(Long userId) {
+        if (!userRepository.existsById(userId))
+            throw new NotFoundException("User with id=" + userId + " not found");
     }
 }

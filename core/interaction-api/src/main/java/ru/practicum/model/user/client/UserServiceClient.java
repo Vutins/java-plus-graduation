@@ -5,6 +5,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import ru.practicum.user.dto.UserDto;
+import ru.practicum.user.dto.UserShortDto;
 
 @FeignClient(
         name = "user-service",
@@ -14,4 +15,7 @@ public interface UserServiceClient {
 
     @GetMapping("/{userId}")
     UserDto getUserById(@PathVariable @Positive Long id);
+
+    @GetMapping("/{userId}")
+    UserShortDto getUserShortById(@PathVariable @Positive Long id);
 }
