@@ -1,16 +1,16 @@
 server:
   port: 8080
 
+spring:
   cloud:
     config:
       discovery:
         enabled: true
-
     gateway:
       discovery:
         locator:
           enabled: true
-          lowerCaseServiceId: true
+          lower-case-service-id: true
 
       routes:
         - id: admin-categories-route
@@ -34,44 +34,34 @@ server:
             - Path=/admin/comments/**
 
         - id: admin-users-route
-          uri: lb://MAIN-SERVICE
+          uri: lb://USER-SERVICE
           predicates:
             - Path=/admin/users/**
 
         - id: private-events-route
-          uri: lb://MAIN-SERVICE
+          uri: lb://EVENT-SERVICE
           predicates:
             - Path=/users/*/events/**
 
         - id: private-requests-route
-          uri: lb://MAIN-SERVICE
+          uri: lb://REQUEST-SERVICE
           predicates:
             - Path=/users/*/requests/**
 
-        - id: private-reviews-route
-          uri: lb://MAIN-SERVICE
-          predicates:
-            - Path=/users/*/reviews/**
-
         - id: public-categories-route
-          uri: lb://MAIN-SERVICE
+          uri: lb://CATEGORY-SERVICE
           predicates:
             - Path=/categories/**
 
         - id: public-compilations-route
-          uri: lb://MAIN-SERVICE
+          uri: lb://COMPILATION-SERVICE
           predicates:
             - Path=/compilations/**
 
         - id: public-events-route
-          uri: lb://MAIN-SERVICE
+          uri: lb://EVENT-SERVICE
           predicates:
             - Path=/events/**
-
-        - id: public-reviews-route
-          uri: lb://MAIN-SERVICE
-          predicates:
-            - Path=/reviews/**
 
 management:
   endpoint:
