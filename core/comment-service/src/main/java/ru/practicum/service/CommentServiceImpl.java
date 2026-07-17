@@ -184,7 +184,7 @@ public class CommentServiceImpl implements CommentService {
         Reaction reactionForSave = Reaction.builder()
                 .voteType(voteType)
                 .evaluatorId(evaluator.getId())
-                .commentId(comment.getId())
+                .comment(comment)
                 .build();
 
         Reaction createdReaction = reactionRepository.save(reactionForSave);

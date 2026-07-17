@@ -26,8 +26,9 @@ public class Reaction {
     @Column(name = "vote_type", nullable = false)
     String voteType;
 
-    @Column(name = "comment_id", nullable = false)
-    Long commentId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "comment", nullable = false)
+    Comment comment;
 
     @Column(name = "evaluator_id", nullable = false)
     Long evaluatorId;
@@ -39,4 +40,15 @@ public class Reaction {
     @UpdateTimestamp
     @Column(name = "updated_time")
     LocalDateTime updated;
+
+    public Long getCommentId() {
+        return this.comment != null ? this.comment.getId() : null;
+    }
+
+    public void setCommentId(Long commentId) {
+        if (this.comment == null) {
+            this.comment = new Comment();
+        }
+        this.comment.setId(commentId);
+    }
 }

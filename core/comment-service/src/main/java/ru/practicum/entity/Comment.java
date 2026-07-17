@@ -8,6 +8,8 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Entity
@@ -37,4 +39,8 @@ public class Comment {
     @Column(name = "text", nullable = false)
     @NotBlank(message = "текст комментария не может быть пустым")
     String text;
+
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    List<Reaction> reactions = new ArrayList<>();
 }
