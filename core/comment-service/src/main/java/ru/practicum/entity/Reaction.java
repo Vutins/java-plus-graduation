@@ -26,12 +26,10 @@ public class Reaction {
     @Column(name = "vote_type", nullable = false)
     String voteType;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "comment_id", nullable = false)
+    @Column(name = "comment_id", nullable = false)
     Long commentId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "evaluator_id", nullable = false)
+    @Column(name = "evaluator_id", nullable = false)
     Long evaluatorId;
 
     @CreationTimestamp

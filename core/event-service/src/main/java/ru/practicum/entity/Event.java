@@ -26,15 +26,13 @@ public class Event {
             columnDefinition = "VARCHAR(2000)")
     String annotation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id", nullable = false)
+    @Column(name = "category_id", nullable = false)
     Long categoryId;
 
     @Column(name = "created_on")
     LocalDateTime createdOn;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "initiator_id", nullable = false)
+    @Column(name = "initiator_id", nullable = false)
     Long initiatorId;
 
     @Embedded

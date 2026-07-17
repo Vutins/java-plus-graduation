@@ -24,17 +24,13 @@ public class Comment {
     Long id;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "commentator_id",
-            nullable = false,
-            foreignKey = @ForeignKey(name = "fk_comments_users"))
+    @Column(name = "commentator_id",
+            nullable = false)
     Long commentatorId;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_id",
-            nullable = false,
-            foreignKey = @ForeignKey(name = "fk_comments_events"))
+    @Column(name = "event_id",
+            nullable = false)
     Long eventId;
 
     @NotNull
