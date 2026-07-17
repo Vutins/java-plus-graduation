@@ -45,11 +45,6 @@ public class PublicEventController {
         return ResponseEntity.ok(eventService.findEventById(id, httpServletRequest));
     }
 
-    @GetMapping("/client/validate/category/{categoryId}")
-    public void existsByCategoryId(@PathVariable @Positive Long categoryId) {
-        eventService.existsByCategoryId(categoryId);
-    }
-
     @GetMapping("/client/full/{id}")
     public EventFullDto fullDtoFindById(@PathVariable @Positive Long id, HttpServletRequest httpServletRequest) {
         return eventService.findEventById(id, httpServletRequest);

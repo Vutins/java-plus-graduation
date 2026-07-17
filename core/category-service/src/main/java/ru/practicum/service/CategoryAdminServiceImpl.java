@@ -79,7 +79,7 @@ public class CategoryAdminServiceImpl implements CategoryAdminService {
             throw new NotFoundException("категория с id = " + id + " не найдена");
         }
 
-        eventServiceClient.existsByCategoryId(id);
+        eventServiceClient.validateEventExistingById(id);
 
         categoryRepository.deleteById(id);
         log.info("категория с id = {} удалена", id);

@@ -16,9 +16,6 @@ import java.util.Set;
 )
 public interface EventServiceClient {
 
-    @GetMapping("/client/validate/category/{categoryId}")
-    void existsByCategoryId(@PathVariable @Positive Long categoryId);
-
     @GetMapping("/client/full/{id}")
     EventFullDto fullDtoFindById(@PathVariable @Positive Long id);
 
