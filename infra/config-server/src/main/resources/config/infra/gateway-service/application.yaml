@@ -54,10 +54,10 @@ spring:
             - Path=/events/**
 
 management:
-  endpoint:
-    gateway:
-      enabled: true
   endpoints:
     web:
       exposure:
-        include: health,info,gateway
+        include: "*"
+  endpoint:
+    gateway:
+      enabled: true
