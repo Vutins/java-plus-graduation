@@ -2,15 +2,18 @@ server:
   port: 8080
 
 spring:
+  application:
+    name: gateway-server
+
   cloud:
     config:
       discovery:
         enabled: true
+
     gateway:
       discovery:
         locator:
           enabled: true
-          lower-case-service-id: true
       routes:
         - id: admin-categories-route
           uri: lb://CATEGORY-SERVICE
@@ -52,12 +55,3 @@ spring:
           uri: lb://EVENT-SERVICE
           predicates:
             - Path=/events/**
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-  endpoint:
-    gateway:
-      enabled: true
