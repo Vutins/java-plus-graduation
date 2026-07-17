@@ -176,9 +176,11 @@ public class CommentServiceImpl implements CommentService {
                 reaction.setVoteType(voteType);
                 Reaction savedReaction = reactionRepository.save(reaction);
                 log.info("Реакция обновлена: id={}, voteType={}", savedReaction.getId(), voteType);
-                return reactionMapper.toReactionResponseDto(savedReaction);
+
+                return reactionMapper.toReactionResponseDto(savedReaction, evaluator);
             }
-            return reactionMapper.toReactionResponseDto(reaction);
+
+            return reactionMapper.toReactionResponseDto(reaction, evaluator);
         }
 
         Reaction reactionForSave = Reaction.builder()
@@ -189,7 +191,8 @@ public class CommentServiceImpl implements CommentService {
 
         Reaction createdReaction = reactionRepository.save(reactionForSave);
         log.info("Реакция создана: id={}, voteType={}", createdReaction.getId(), voteType);
-        return reactionMapper.toReactionResponseDto(createdReaction);
+
+        return reactionMapper.toReactionResponseDto(createdReaction, evaluator);
     }
 
     @Override
