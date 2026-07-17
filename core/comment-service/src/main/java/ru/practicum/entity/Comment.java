@@ -23,12 +23,10 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "author_id", nullable = false)
+    @Column(name = "commentator_id", nullable = false)
     Long commentatorId;
 
-    @ManyToOne
-    @JoinColumn(name = "event_id", nullable = false)
+    @Column(name = "event_id", nullable = false)
     Long eventId;
 
     @NotNull
