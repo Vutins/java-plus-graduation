@@ -36,4 +36,10 @@ public interface RequestServiceClient {
 
     @GetMapping("{userId}/client/list/requests/event/{eventId}")
     List<ParticipationRequestDto> getEventParticipants(@PathVariable Long userId, @PathVariable Long eventId);
+
+    @GetMapping("/internal/events/{eventId}/count")
+    Long getConfirmedRequestsCountByEventId(@PathVariable Long eventId);
+
+    @GetMapping("/internal/events/count")
+    List<Object[]> countConfirmedRequestsForEvents(@RequestBody List<Long> events);
 }

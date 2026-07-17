@@ -12,6 +12,7 @@ import ru.practicum.model.event.dto.EventFullDto;
 import ru.practicum.model.event.dto.EventShortDto;
 import ru.practicum.model.event.dto.NewEventDto;
 import ru.practicum.model.event.dto.PatchEventDto;
+import ru.practicum.model.request.client.RequestServiceClient;
 import ru.practicum.model.request.dto.EventRequestStatusUpdateRequest;
 import ru.practicum.model.request.dto.EventRequestStatusUpdateResult;
 import ru.practicum.model.request.dto.ParticipationRequestDto;

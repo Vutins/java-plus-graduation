@@ -23,4 +23,8 @@ public interface RequestService {
     Map<Long, List<ParticipationRequestDto>> getConfirmedRequestsCount(List<Long> eventIds, RequestStatus requestStatus);
 
     ParticipationRequestDto getUserRequestByUserIdAndEventId(Long userId, Long eventId);
+
+    Long getConfirmedRequestsCountByEventId(Long eventId);
+
+    List<Object[]> countConfirmedRequestsForEvents(List<Long> events);
 }

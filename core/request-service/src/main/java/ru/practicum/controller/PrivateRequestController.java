@@ -73,4 +73,13 @@ public class PrivateRequestController {
         return requestService.getEventParticipants(userId, eventId);
     }
 
+    @GetMapping("/internal/events/{eventId}/count")
+    public Long getConfirmedRequestsCountByEventId(@PathVariable Long eventId) {
+        return requestService.getConfirmedRequestsCountByEventId(eventId);
+    }
+
+    @GetMapping("/internal/events/count")
+    public List<Object[]> countConfirmedRequestsForEvents(@RequestBody List<Long> events) {
+        return requestService.countConfirmedRequestsForEvents(events);
+    }
 }

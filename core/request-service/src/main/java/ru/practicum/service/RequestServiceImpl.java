@@ -21,6 +21,7 @@ import ru.practicum.repository.RequestRepository;
 import ru.practicum.user.dto.UserDto;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -214,5 +215,22 @@ public class RequestServiceImpl implements RequestService {
                 .orElseThrow(() -> new NotFoundException("Заявки юзера с id=" + userId + " на участие в ивенте " +
                         "с id=" + eventId + " нет в БД!"));
         return requestMapper.toDto(request);
+    }
+
+    @Override
+    public Long getConfirmedRequestsCountByEventId(Long eventId) {
+        eventServiceClient.validateEventExistingById(eventId);
+        Long count = requestRepository.countConfirmedRequestsByEventId(eventId);
+        return count != null ? count : 0L;
+    }
+
+    @Override
+    public List<Object[]> countConfirmedRequestsForEvents(List<Long> events) {
+        if (events == null || events.isEmpty()) {
+            return Collections.emptyList();
+        }
+        events.forEach(eventServiceClient::validateEventExistingById);
+
+        return requestRepository.countConfirmedRequestsForEvents(events);
     }
 }

@@ -40,4 +40,5 @@ public interface EventService {
     void validateEventExistingById(Long eventId);
 
     void validateCategoryHasNoEvents(Long categoryId);
+
 }

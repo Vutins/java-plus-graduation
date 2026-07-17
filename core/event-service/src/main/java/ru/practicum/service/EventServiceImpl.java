@@ -132,7 +132,7 @@ public class EventServiceImpl implements EventService {
 
         log.info("Получаем количество просмотров.");
         eventFullDto.setViews(getStats(event));
-        eventFullDto.setConfirmedRequests(requestServiceClient.countConfirmedRequestsByEventId(id));
+        eventFullDto.setConfirmedRequests(requestServiceClient.getConfirmedRequestsCountByEventId(id));
         return eventFullDto;
     }
 
@@ -173,7 +173,7 @@ public class EventServiceImpl implements EventService {
             }
         }
 
-        eventFullDto.setConfirmedRequests(requestServiceClient.countConfirmedRequestsByEventId(id));
+        eventFullDto.setConfirmedRequests(requestServiceClient.getConfirmedRequestsCountByEventId(id));
 
         return eventFullDto;
     }
@@ -230,7 +230,7 @@ public class EventServiceImpl implements EventService {
     @Transactional(readOnly = true)
     @Override
     public EventFullDto findEventByIdAndUser(Long userId, Long eventId) {
-        userServiceClient.validateUserExistingById(userId)
+        userServiceClient.validateUserExistingById(userId);
 
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException(String.format("Событие с id = %d отсутствует.", eventId)));
@@ -388,24 +388,14 @@ public class EventServiceImpl implements EventService {
     public EventShortDto getEventShortDtoByIdClient(Long id) {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Event with the same id not found"));
-
-        UserShortDto userShortDto = userServiceClient.getUserShortById(event.getInitiatorId());
-
-        CategoryDto categoryDto = categoryServiceClient.getCategoryById(event.getCategoryId());
-
-        return eventMapper.toShortDto(event, categoryDto, userShortDto);
+        return eventMapper.toShortDto(event);
     }
 
     @Override
     public Set<EventShortDto> getEventShortDtoSetByIds(Set<Long> eventIds) {
         return eventRepository.findAllByIdIn(eventIds)
                 .stream()
-                .map(event -> {
-                    return eventMapper.toShortDto(
-                            event,
-                            categoryServiceClient.getCategoryById(event.getCategoryId()),
-                            userServiceClient.getUserShortById(event.getInitiatorId()));
-                })
+                .map(eventMapper::toShortDto)
                 .collect(Collectors.toSet());
     }
 
@@ -413,15 +403,6 @@ public class EventServiceImpl implements EventService {
     public EventFullDto getEventFullDtoByIdClient(Long id) {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Event with the same id not found"));
-
-        UserShortDto userShortDto = userServiceClient.getUserShortById(event.getInitiatorId());
-
-        CategoryDto categoryDto = categoryServiceClient.getCategoryById(event.getCategoryId());
-
-        return eventMapper.toFullDto(
-                event,
-                categoryDto,
-                userShortDto
-        );
+        return eventMapper.toFullDto(event);
     }
 }
