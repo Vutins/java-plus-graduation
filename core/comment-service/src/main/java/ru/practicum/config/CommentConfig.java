@@ -28,7 +28,6 @@ public class CommentConfig {
                 .baseUrl("http://stats-server")
                 .requestFactory(requestFactory)
                 .build();
-
         return new StatsClient(restClient);
     }
 }
