@@ -2,6 +2,7 @@ package ru.practicum.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.practicum.entity.Reaction;
 
@@ -15,10 +16,10 @@ public interface ReactionRepository extends JpaRepository<Reaction, Long> {
             "FROM Reaction r " +
             "WHERE r.comment.id = :commentId " +
             "GROUP BY r.voteType")
-    List<Object[]> getLikesAndDislikesCount(Long commentId);
+    List<Object[]> getLikesAndDislikesCount(@Param("commentId") Long commentId);
 
     @Query("SELECT r " +
             "FROM Reaction r " +
-            "WHERE r.evaluator.id = :evaluatorId AND r.comment.id = :commentId")
-    Optional<Reaction> existByUserAndComment(Long evaluatorId, Long commentId);
+            "WHERE r.evaluatorId = :evaluatorId AND r.comment.id = :commentId")
+    Optional<Reaction> existByUserAndComment(@Param("evaluatorId") Long evaluatorId, @Param("commentId") Long commentId);
 }
