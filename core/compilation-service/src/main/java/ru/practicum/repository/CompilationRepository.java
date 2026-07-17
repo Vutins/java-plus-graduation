@@ -10,6 +10,7 @@ import java.util.List;
 
 @Repository
 public interface CompilationRepository extends JpaRepository<Compilation, Long> {
+
     boolean existsByTitle(String title);
 
     @Query(value = "SELECT c.id FROM compilations c " +
@@ -20,6 +21,6 @@ public interface CompilationRepository extends JpaRepository<Compilation, Long> 
                                   @Param("from") int from,
                                   @Param("size") int size);
 
-    @Query("SELECT DISTINCT c FROM Compilation c LEFT JOIN FETCH c.events WHERE c.id IN :ids ORDER BY c.id")
+    @Query("SELECT c FROM Compilation c WHERE c.id IN :ids ORDER BY c.id")
     List<Compilation> findCompilationsWithEventsByIds(@Param("ids") List<Long> ids);
 }
