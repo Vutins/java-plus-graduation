@@ -9,6 +9,7 @@ import ru.practicum.user.dto.UserShortDto;
 @Mapper(componentModel = "spring", uses = {CommentMapper.class})
 public interface ReactionMapper {
 
+    @Mapping(source = "reaction.id", target = "id")
     @Mapping(source = "reaction.comment", target = "commentResponseDto")
     @Mapping(source = "evaluator", target = "evaluator")
     @Mapping(source = "reaction.created", target = "created", dateFormat = "yyyy-MM-dd HH:mm:ss")
