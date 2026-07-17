@@ -79,5 +79,4 @@ public class PublicEventController {
     public Set<EventShortDto> getEventShortDtoSetByIds(@RequestParam Set<Long> eventIds) {
         return eventService.getEventShortDtoSetByIds(eventIds);
     }
-
 }

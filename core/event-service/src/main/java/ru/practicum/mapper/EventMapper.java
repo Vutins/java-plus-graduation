@@ -3,10 +3,12 @@ package ru.practicum.mapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.entity.Event;
+import ru.practicum.model.category.client.CategoryServiceClient;
 import ru.practicum.model.event.dto.EventFullDto;
 import ru.practicum.model.event.dto.EventShortDto;
 import ru.practicum.model.event.dto.NewEventDto;
 import ru.practicum.model.event.enums.State;
+import ru.practicum.model.user.client.UserServiceClient;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -19,15 +21,17 @@ public class EventMapper {
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private final LocationMapper locationMapper;
+    private final CategoryServiceClient categoryServiceClient;
+    private final UserServiceClient userServiceClient;
 
     public EventFullDto toFullDto(Event event) {
         EventFullDto eventFullDto = EventFullDto.builder()
                 .id(event.getId())
                 .annotation(event.getAnnotation())
-                .categoryId(event.getCategoryId())
+                .category(categoryServiceClient.getCategoryById(event.getCategoryId()))
                 .description(event.getDescription())
-                .initiatorId(event.getInitiatorId())
-                .locationDto(locationMapper.toDto(event.getLocation()))
+                .initiator(userServiceClient.getUserShortById(event.getInitiatorId()))
+                .location(locationMapper.toDto(event.getLocation()))
                 .paid(event.getPaid())
                 .participantLimit(event.getParticipantLimit())
                 .requestModeration(event.getRequestModeration())
@@ -78,9 +82,9 @@ public class EventMapper {
         return EventShortDto.builder()
                 .id(event.getId())
                 .annotation(event.getAnnotation())
-                .category(categoryMapper.toCategoryDto(event.getCategoryId()))
+                .category(categoryServiceClient.getCategoryById(event.getCategoryId()))
                 .eventDate(formatter.format(event.getEventDate()))
-                .initiator(userMapper.toUserShortDto(event.getInitiatorId()))
+                .initiator(userServiceClient.getUserShortById(event.getInitiatorId()))
                 .paid(event.getPaid())
                 .title(event.getTitle())
                 .build();

@@ -27,6 +27,7 @@ import ru.practicum.model.event.dto.NewEventDto;
 import ru.practicum.model.event.dto.PatchEventDto;
 import ru.practicum.model.event.enums.SortType;
 import ru.practicum.model.event.enums.State;
+import ru.practicum.model.request.client.RequestServiceClient;
 import ru.practicum.model.user.client.UserServiceClient;
 import ru.practicum.repository.EventRepository;
 import ru.practicum.specification.AdminEventSpecification;
@@ -229,9 +230,7 @@ public class EventServiceImpl implements EventService {
     @Transactional(readOnly = true)
     @Override
     public EventFullDto findEventByIdAndUser(Long userId, Long eventId) {
-        if (!userServiceClient.existsById(userId)) {
-            throw new NotFoundException(String.format("Пользователя с id = %d не существует.", userId));
-        }
+        userServiceClient.validateUserExistingById(userId)
 
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException(String.format("Событие с id = %d отсутствует.", eventId)));
@@ -248,8 +247,7 @@ public class EventServiceImpl implements EventService {
     @Transactional
     @Override
     public EventFullDto saveNewEvent(Long userId, NewEventDto newEventDto) {
-        UserDto user = userServiceClient.findById(userId)
-                .orElseThrow(() -> new NotFoundException(String.format("Пользователя с id = %d не существует.", userId)));
+        UserDto user = userServiceClient.getUserById(userId);
 
         CategoryDto category = categoryServiceClient.getCategoryById(newEventDto.getCategory());
         Event event = eventMapper.toEntity(newEventDto, user.getId(), category.getId());
@@ -395,7 +393,7 @@ public class EventServiceImpl implements EventService {
 
         CategoryDto categoryDto = categoryServiceClient.getCategoryById(event.getCategoryId());
 
-        return eventMapper.toEventShortDto(event, categoryDto, userShortDto);
+        return eventMapper.toShortDto(event, categoryDto, userShortDto);
     }
 
     @Override
@@ -403,7 +401,7 @@ public class EventServiceImpl implements EventService {
         return eventRepository.findAllByIdIn(eventIds)
                 .stream()
                 .map(event -> {
-                    return eventMapper.toEventShortDto(
+                    return eventMapper.toShortDto(
                             event,
                             categoryServiceClient.getCategoryById(event.getCategoryId()),
                             userServiceClient.getUserShortById(event.getInitiatorId()));
@@ -420,7 +418,7 @@ public class EventServiceImpl implements EventService {
 
         CategoryDto categoryDto = categoryServiceClient.getCategoryById(event.getCategoryId());
 
-        return eventMapper.toEventFullDto(
+        return eventMapper.toFullDto(
                 event,
                 categoryDto,
                 userShortDto

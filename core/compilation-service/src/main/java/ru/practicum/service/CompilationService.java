@@ -7,6 +7,7 @@ import ru.practicum.model.compilation.dto.UpdateCompilationRequest;
 import java.util.List;
 
 public interface CompilationService {
+
     CompilationDto createNewCompilation(NewCompilationDto newCompilationDto);
 
     void deleteCompilation(long compId);

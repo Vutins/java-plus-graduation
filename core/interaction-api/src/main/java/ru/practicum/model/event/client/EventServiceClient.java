@@ -4,7 +4,11 @@ import jakarta.validation.constraints.Positive;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import ru.practicum.model.event.dto.EventFullDto;
+import ru.practicum.model.event.dto.EventShortDto;
+
+import java.util.Set;
 
 @FeignClient(
         name = "event-service",
@@ -17,4 +21,19 @@ public interface EventServiceClient {
 
     @GetMapping("/client/full/{id}")
     EventFullDto fullDtoFindById(@PathVariable @Positive Long id);
+
+    @GetMapping("/client/short/{id}")
+    EventShortDto getEventShortDtoById(@PathVariable @Positive Long id);
+
+    @GetMapping("/client/full/{id}")
+    EventFullDto getEventFullDtoByIdClient(@PathVariable @Positive Long id);
+
+    @GetMapping("/client/validate/{eventId}")
+    void validateEventExistingById(@PathVariable @Positive Long eventId);
+
+    @GetMapping("/client/validate/category/{categoryId}")
+    void validateCategoryHasNoEvents(@PathVariable @Positive Long categoryId);
+
+    @GetMapping("/client/find/all")
+    Set<EventShortDto> getEventShortDtoSetByIds(@RequestParam Set<Long> eventIds);
 }
