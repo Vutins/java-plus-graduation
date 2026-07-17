@@ -23,21 +23,20 @@ public interface RequestRepository extends JpaRepository<ParticipationRequest, L
     boolean existsByRequesterIdAndEventId(Long userId, Long eventId);
 
     @Query("SELECT COUNT(pr) FROM ParticipationRequest pr " +
-            "WHERE pr.event.id = :eventId AND pr.status = 'CONFIRMED'")
+            "WHERE pr.eventId = :eventId AND pr.status = 'CONFIRMED'")
     Long countConfirmedRequestsByEventId(@Param("eventId") Long eventId);
 
-    @Query("SELECT e.id, COUNT(pr) " +
-            "FROM Event e " +
-            "LEFT JOIN ParticipationRequest pr ON pr.event.id = e.id " +
-            "WHERE e.id IN :events AND pr.status = 'CONFIRMED' " +
-            "GROUP BY e.id")
-    List<Object[]> countConfirmedRequestsForEvents(List<Long> events);
+    @Query("SELECT pr.eventId, COUNT(pr) " +
+            "FROM ParticipationRequest pr " +
+            "WHERE pr.eventId IN :events AND pr.status = 'CONFIRMED' " +
+            "GROUP BY pr.eventId")
+    List<Object[]> countConfirmedRequestsForEvents(@Param("events") List<Long> events);
 
     List<ParticipationRequest> findAllByIdInAndEventId(List<Long> ids, Long eventId);
 
     @Modifying
     @Query("UPDATE ParticipationRequest pr SET pr.status = 'REJECTED' " +
-            "WHERE pr.event.id = :eventId AND pr.status = 'PENDING'")
+            "WHERE pr.eventId = :eventId AND pr.status = 'PENDING'")
     void rejectAllPendingRequestsByEventId(@Param("eventId") Long eventId);
 
     List<ParticipationRequest> findAllByEventIdInAndStatus(List<Long> eventIds, RequestStatus status);
