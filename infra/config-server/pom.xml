@@ -47,6 +47,15 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                    <mainClass>ru.practicum.ConfigServer</mainClass>
+                </configuration>
             </plugin>
         </plugins>
     </build>
