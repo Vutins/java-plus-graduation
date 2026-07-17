@@ -16,9 +16,6 @@ import java.util.Set;
 )
 public interface EventServiceClient {
 
-    @GetMapping("/client/full/{id}")
-    EventFullDto fullDtoFindById(@PathVariable @Positive Long id);
-
     @GetMapping("/client/short/{id}")
     EventShortDto getEventShortDtoById(@PathVariable @Positive Long id);
 

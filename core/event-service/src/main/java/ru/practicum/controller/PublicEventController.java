@@ -55,11 +55,6 @@ public class PublicEventController {
         return eventService.getEventShortDtoByIdClient(id);
     }
 
-    @GetMapping("/client/full/{id}")
-    EventFullDto getEventFullDtoByIdClient(@PathVariable @Positive Long id) {
-        return eventService.getEventFullDtoByIdClient(id);
-    }
-
     @GetMapping("/client/validate/{eventId}")
     public void validateEventExistingById(@PathVariable @Positive Long eventId) {
         eventService.validateEventExistingById(eventId);
