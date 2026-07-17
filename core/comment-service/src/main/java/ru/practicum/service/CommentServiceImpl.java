@@ -50,10 +50,7 @@ public class CommentServiceImpl implements CommentService {
 
         UserDto commentator = userServiceClient.getUserById(commentatorId);
 
-        EventShortDto event = eventServiceClient.getById(eventId).orElseThrow(() -> {
-            log.warn("Событие с id={} не найдено при создании комментария", eventId);
-            return new NotFoundException("мероприятия с id = " + eventId + " не существует");
-        });
+        EventShortDto event = eventServiceClient.getEventShortDtoById(eventId);
 
         Comment commentCreate = Comment.builder()
                 .commentatorId(commentator.getId())
@@ -102,10 +99,7 @@ public class CommentServiceImpl implements CommentService {
         log.info("Удаление комментария пользователем: eventId={}, commentId={}, userId={}",
                 eventId, commentId, userId);
 
-        EventShortDto event = eventServiceClient.findById(eventId).orElseThrow(() -> {
-            log.warn("Событие с id={} не найдено при удалении комментария", eventId);
-            return new NotFoundException("мероприятия с id = " + eventId + " не существует");
-        });
+        EventShortDto event = eventServiceClient.getEventShortDtoById(eventId);
 
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> {
             log.warn("Комментарий с id={} не найден при удалении", commentId);
@@ -146,10 +140,7 @@ public class CommentServiceImpl implements CommentService {
         log.info("Запрос комментариев события: eventId={}, sortOrder={}, from={}, size={}",
                 eventId, sortOrder, from, size);
 
-        if (!eventServiceClient.existsById(eventId)) {
-            log.warn("Событие с id={} не найдено при запросе комментариев", eventId);
-            throw new NotFoundException("мероприятия с id = " + eventId + " не существует");
-        }
+        eventServiceClient.validateEventExistingById(eventId);
 
         Sort sort = Sort.by("created");
         if ("desc".equalsIgnoreCase(sortOrder)) {

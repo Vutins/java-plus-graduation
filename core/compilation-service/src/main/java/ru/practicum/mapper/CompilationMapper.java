@@ -9,9 +9,9 @@ import ru.practicum.model.compilation.dto.NewCompilationDto;
 @Mapper(componentModel = "spring")
 public interface CompilationMapper {
 
-    @Mapping(target = "events", ignore = true)
     @Mapping(target = "id", ignore = true)
     Compilation toEntity(NewCompilationDto dto);
 
+    @Mapping(target = "events", ignore = true)
     CompilationDto toDto(Compilation compilation);
 }

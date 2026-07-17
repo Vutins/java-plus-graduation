@@ -144,9 +144,9 @@ public class CompilationServiceImpl implements CompilationService {
                 });
     }
 
-    private List<EventShortDto> getEventList(List<Long> eventIds) {
+    private Set<EventShortDto> getEventList(Set<Long> eventIds) {
         log.debug("Загрузка событий по списку id: {}", eventIds);
-        List<EventShortDto> events = eventServiceClient.findAllById(eventIds);
+        Set<EventShortDto> events = eventServiceClient.getEventShortDtoSetByIds(eventIds);
 
         if (events.size() != eventIds.size()) {
             Set<Long> foundIds = events.stream()
