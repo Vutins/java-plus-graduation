@@ -1,12 +1,16 @@
 package ru.practicum.controller;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.model.request.dto.EventRequestStatusUpdateRequest;
+import ru.practicum.model.request.dto.EventRequestStatusUpdateResult;
 import ru.practicum.model.request.dto.ParticipationRequestDto;
 import ru.practicum.model.request.enums.RequestStatus;
 import ru.practicum.service.RequestService;
@@ -56,6 +60,17 @@ public class PrivateRequestController {
             @PathVariable @Positive Long userId,
             @PathVariable @Positive Long eventId) {
         return requestService.getUserRequestByUserIdAndEventId(userId, eventId);
+    }
+
+    @PatchMapping("{userId}/client/event/{eventId}")
+    public EventRequestStatusUpdateResult changeRequestStatus(@PathVariable Long userId, @PathVariable Long eventId,
+                                                              @RequestBody @Valid @NotNull EventRequestStatusUpdateRequest request) {
+        return requestService.changeRequestStatus(userId, eventId, request);
+    }
+
+    @GetMapping("{userId}/client/list/requests/event/{eventId}")
+    public List<ParticipationRequestDto> getEventParticipants(@PathVariable Long userId, @PathVariable Long eventId) {
+        return requestService.getEventParticipants(userId, eventId);
     }
 
 }

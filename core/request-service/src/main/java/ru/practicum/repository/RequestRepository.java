@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.practicum.entity.ParticipationRequest;
+import ru.practicum.model.request.enums.RequestStatus;
 
 import java.util.List;
 import java.util.Optional;
@@ -38,4 +39,8 @@ public interface RequestRepository extends JpaRepository<ParticipationRequest, L
     @Query("UPDATE ParticipationRequest pr SET pr.status = 'REJECTED' " +
             "WHERE pr.event.id = :eventId AND pr.status = 'PENDING'")
     void rejectAllPendingRequestsByEventId(@Param("eventId") Long eventId);
+
+    List<ParticipationRequest> findAllByEventIdInAndStatus(List<Long> eventIds, RequestStatus status);
+
+    Optional<ParticipationRequest> findByEventIdAndRequesterId(Long eventId, Long requesterId);
 }

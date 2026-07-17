@@ -22,6 +22,8 @@ import ru.practicum.user.dto.UserDto;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -55,8 +57,7 @@ public class RequestServiceImpl implements RequestService {
 
         UserDto requester = userServiceClient.getUserById(userId);
 
-        EventFullDto event = eventServiceClient.findById(eventId)
-                .orElseThrow(() -> new NotFoundException(String.format("Событие с id = %d не найдено", eventId)));
+        EventFullDto event = eventServiceClient.getEventFullDtoByIdClient(eventId);
 
         if (event.getInitiator().getId().equals(userId)) {
             throw new ConflictException("Инициатор события не может добавить запрос на участие в своём событии");
@@ -114,11 +115,11 @@ public class RequestServiceImpl implements RequestService {
 
        userServiceClient.validateUserExistingById(userId);
 
-        EventFullDto event = eventServiceClient.findById(eventId)
-                .orElseThrow(() -> new NotFoundException(String.format("Событие с id = %d не найдено", eventId)));
+        EventFullDto event = eventServiceClient.getEventFullDtoByIdClient(eventId);
 
         if (!event.getInitiator().getId().equals(userId)) {
-            throw new NotFoundException(String.format("Событие с id = %d не принадлежит пользователю %d", eventId, userId));
+            throw new NotFoundException(String.format("Событие с id = %d не принадлежит пользователю %d", eventId,
+                    userId));
         }
 
         List<ParticipationRequest> requests = requestRepository.findAllByEventId(eventId);
@@ -133,8 +134,7 @@ public class RequestServiceImpl implements RequestService {
 
         userServiceClient.validateUserExistingById(userId);
 
-        EventFullDto event = eventServiceClient.findById(eventId)
-                .orElseThrow(() -> new NotFoundException(String.format("Событие с id = %d не найдено", eventId)));
+        EventFullDto event = eventServiceClient.getEventFullDtoByIdClient(eventId);
 
         if (!event.getInitiator().getId().equals(userId)) {
             throw new NotFoundException(String.format("Событие с id = %d не принадлежит пользователю %d", eventId, userId));
@@ -198,5 +198,21 @@ public class RequestServiceImpl implements RequestService {
                 .confirmedRequests(requestMapper.toDtoList(confirmedRequestsList))
                 .rejectedRequests(requestMapper.toDtoList(rejectedRequestsList))
                 .build();
+    }
+
+    @Override
+    public Map<Long, List<ParticipationRequestDto>> getConfirmedRequestsCount(
+            List<Long> eventIds,
+            RequestStatus requestStatus) {
+        List<ParticipationRequest> requests = requestRepository.findAllByEventIdInAndStatus(eventIds, requestStatus);
+        return requests.stream().map(requestMapper::toDto).collect(Collectors.groupingBy(ParticipationRequestDto::getEvent));
+    }
+
+    @Override
+    public ParticipationRequestDto getUserRequestByUserIdAndEventId(Long userId, Long eventId) {
+        ParticipationRequest request = requestRepository.findByEventIdAndRequesterId(eventId, userId)
+                .orElseThrow(() -> new NotFoundException("Заявки юзера с id=" + userId + " на участие в ивенте " +
+                        "с id=" + eventId + " нет в БД!"));
+        return requestMapper.toDto(request);
     }
 }
