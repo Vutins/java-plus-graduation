@@ -6,93 +6,117 @@ spring:
     config:
       discovery:
         enabled: true
+
     gateway:
+      httpclient:
+        connect-timeout: 5000
+        response-timeout: 60s
       discovery:
         locator:
           enabled: true
-
       routes:
-        # Маршруты для Admin контроллеров
+        # ==========================================
+        # 1. ADMIN ROUTES
+        # ==========================================
         - id: admin-categories-route
-          uri: lb://category-service
+          uri: lb://CATEGORY-SERVICE
           predicates:
             - Path=/admin/categories/**
-          filters:
-            - RewritePath=/admin/categories/(?<segment>.*), /admin/categories/$\{segment}
 
         - id: admin-compilations-route
-          uri: lb://compilation-service
+          uri: lb://COMPILATION-SERVICE
           predicates:
             - Path=/admin/compilations/**
-          filters:
-            - RewritePath=/admin/compilations/(?<segment>.*), /admin/compilations/$\{segment}
 
         - id: admin-events-route
-          uri: lb://event-service
+          uri: lb://EVENT-SERVICE
           predicates:
             - Path=/admin/events/**
-          filters:
-            - RewritePath=/admin/events/(?<segment>.*), /admin/events/$\{segment}
 
-        - id: admin-reviews-route
-          uri: lb://review-service
+        - id: admin-comments-route
+          uri: lb://COMMENT-SERVICE
           predicates:
-            - Path=/admin/reviews/**
-          filters:
-            - RewritePath=/admin/reviews/(?<segment>.*), /admin/reviews/$\{segment}
+            - Path=/admin/comments/**
 
         - id: admin-users-route
-          uri: lb://user-service
+          uri: lb://USER-SERVICE
           predicates:
             - Path=/admin/users/**
-          filters:
-            - RewritePath=/admin/users/(?<segment>.*), /admin/users/$\{segment}
 
-        # Маршруты для Private контроллеров
-        - id: private-requests-route
-          uri: lb://request-service
-          predicates:
-            - Path=/users/{userId}/requests/**, /users/{userId}/events/{eventId}/requests
-          filters:
-            - RewritePath=/users/(?<userId>\d+)/(?<segment>.*), /users/$\{userId}/$\{segment}
-
+        # ==========================================
+        # 2. PRIVATE / USER-SPECIFIC ROUTES
+        # ==========================================
         - id: private-events-route
-          uri: lb://event-service
+          uri: lb://EVENT-SERVICE
           predicates:
-            - Path=/users/{userId}/events/**
+            - Path=/users/*/events/**
 
-        - id: private-reviews-route
-          uri: lb://review-service
+        - id: private-requests-route
+          uri: lb://REQUEST-SERVICE
           predicates:
-            - Path=/users/{userId}/reviews/**
-          filters:
-            - RewritePath=/users/(?<userId>\\d+)/reviews/(?<segment>.*), /users/$\{userId}/reviews/$\{segment}
+            - Path=/users/*/requests/**
 
-        # Маршруты для Public контроллеров
+        - id: client-requests-route
+          uri: lb://REQUEST-SERVICE
+          predicates:
+            - Path=/users/client/**
+
+        - id: internal-requests-route
+          uri: lb://REQUEST-SERVICE
+          predicates:
+            - Path=/users/internal/**
+
+        - id: private-comments-create-update-route
+          uri: lb://COMMENT-SERVICE
+          predicates:
+            - Path=/events/*/users/*/comment/**
+
+        - id: public-comments-by-event-route
+          uri: lb://COMMENT-SERVICE
+          predicates:
+            - Path=/events/*/comments/**
+
+        # ==========================================
+        # 3. PUBLIC / GENERAL ROUTES
+        # ==========================================
+        - id: public-comments-reactions-route
+          uri: lb://COMMENT-SERVICE
+          predicates:
+            - Path=/comments/**
+
         - id: public-categories-route
-          uri: lb://category-service
+          uri: lb://CATEGORY-SERVICE
           predicates:
             - Path=/categories/**
-          filters:
-            - RewritePath=/categories/(?<segment>.*), /categories/$\{segment}
 
         - id: public-compilations-route
-          uri: lb://compilation-service
+          uri: lb://COMPILATION-SERVICE
           predicates:
             - Path=/compilations/**
-          filters:
-            - RewritePath=/compilations/(?<segment>.*), /compilations/$\{segment}
 
         - id: public-events-route
-          uri: lb://event-service
+          uri: lb://EVENT-SERVICE
           predicates:
             - Path=/events/**
-          filters:
-            - RewritePath=/events/(?<segment>.*), /events/$\{segment}
 
-        - id: public-reviews-route
-          uri: lb://review-service
+        # ==========================================
+        # 4. STATS SERVICE
+        # ==========================================
+        - id: stats-hit-route
+          uri: lb://STATS-SERVER
           predicates:
-            - Path=/reviews/**
-          filters:
-            - RewritePath=/reviews/(?<segment>.*), /reviews/$\{segment}
+            - Path=/hit
+
+        - id: stats-get-route
+          uri: lb://STATS-SERVER
+          predicates:
+            - Path=/stats
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    gateway:
+      enabled: true
