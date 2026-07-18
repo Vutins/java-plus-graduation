@@ -108,3 +108,12 @@ spring:
           uri: lb://STATS-SERVER
           predicates:
             - Path=/stats
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*" # Открываем все эндпоинты для надежности в CI
+  endpoint:
+    gateway:
+      enabled: true
