@@ -1,7 +1,6 @@
 package ru.practicum.mapper;
 
 import lombok.RequiredArgsConstructor;
-import org.mapstruct.Mapper;
 import org.springframework.stereotype.Component;
 import ru.practicum.entity.Event;
 import ru.practicum.model.category.client.CategoryServiceClient;

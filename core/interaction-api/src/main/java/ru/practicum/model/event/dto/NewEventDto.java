@@ -6,7 +6,6 @@ import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.validator.constraints.Length;
-import ru.practicum.entity.LocationDto;
 import ru.practicum.model.event.annotations.DateTimeStart;
 
 @Data

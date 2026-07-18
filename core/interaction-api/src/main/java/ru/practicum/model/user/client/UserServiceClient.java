@@ -4,8 +4,8 @@ import jakarta.validation.constraints.Positive;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import ru.practicum.user.dto.UserDto;
-import ru.practicum.user.dto.UserShortDto;
+import ru.practicum.model.user.dto.UserDto;
+import ru.practicum.model.user.dto.UserShortDto;
 
 @FeignClient(
         name = "user-service",

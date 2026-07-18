@@ -1,11 +1,9 @@
 package ru.practicum.service;
 
-import jakarta.validation.constraints.Positive;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.PathVariable;
-import ru.practicum.user.dto.UserDto;
-import ru.practicum.user.dto.UserRequestDto;
-import ru.practicum.user.dto.UserShortDto;
+import ru.practicum.model.user.dto.UserDto;
+import ru.practicum.model.user.dto.UserRequestDto;
+import ru.practicum.model.user.dto.UserShortDto;
 
 import java.util.List;
 

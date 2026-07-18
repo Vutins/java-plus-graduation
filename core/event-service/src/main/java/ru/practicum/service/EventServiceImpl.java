@@ -29,12 +29,11 @@ import ru.practicum.model.event.enums.SortType;
 import ru.practicum.model.event.enums.State;
 import ru.practicum.model.request.client.RequestServiceClient;
 import ru.practicum.model.user.client.UserServiceClient;
+import ru.practicum.model.user.dto.UserDto;
 import ru.practicum.repository.EventRepository;
 import ru.practicum.specification.AdminEventSpecification;
 import ru.practicum.specification.EventSpecification;
 import ru.practicum.specification.PublicEventSpecification;
-import ru.practicum.user.dto.UserShortDto;
-import ru.practicum.user.dto.UserDto;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

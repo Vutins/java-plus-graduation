@@ -20,14 +20,14 @@ import ru.practicum.model.comment.enums.DirectionSortType;
 import ru.practicum.model.event.client.EventServiceClient;
 import ru.practicum.model.event.dto.EventShortDto;
 import ru.practicum.model.user.client.UserServiceClient;
+import ru.practicum.model.user.dto.UserDto;
+import ru.practicum.model.user.dto.UserShortDto;
 import ru.practicum.repository.CommentRepository;
 import ru.practicum.repository.ReactionRepository;
-import ru.practicum.user.dto.UserShortDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import ru.practicum.user.dto.UserDto;
 
 @Slf4j
 @Service

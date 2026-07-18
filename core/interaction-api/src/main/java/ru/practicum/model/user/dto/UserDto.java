@@ -1,4 +1,4 @@
-package ru.practicum.user.dto;
+package ru.practicum.model.user.dto;
 
 import jakarta.validation.constraints.Email;
 import lombok.*;

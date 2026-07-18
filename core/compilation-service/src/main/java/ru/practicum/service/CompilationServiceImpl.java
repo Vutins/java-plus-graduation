@@ -15,7 +15,6 @@ import ru.practicum.model.event.client.EventServiceClient;
 import ru.practicum.model.event.dto.EventShortDto;
 import ru.practicum.repository.CompilationRepository;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;

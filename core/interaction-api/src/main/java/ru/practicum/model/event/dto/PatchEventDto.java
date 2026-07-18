@@ -5,7 +5,6 @@ import jakarta.validation.constraints.Positive;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.validator.constraints.Length;
-import ru.practicum.entity.LocationDto;
 
 @Data
 @AllArgsConstructor

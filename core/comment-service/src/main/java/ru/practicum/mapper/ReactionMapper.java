@@ -4,7 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import ru.practicum.entity.Reaction;
 import ru.practicum.model.comment.dto.ReactionResponseDto;
-import ru.practicum.user.dto.UserShortDto;
+import ru.practicum.model.user.dto.UserShortDto;
 
 @Mapper(componentModel = "spring", uses = {CommentMapper.class})
 public interface ReactionMapper {

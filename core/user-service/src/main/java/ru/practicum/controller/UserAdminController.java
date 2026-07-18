@@ -8,10 +8,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.model.user.dto.UserDto;
+import ru.practicum.model.user.dto.UserRequestDto;
+import ru.practicum.model.user.dto.UserShortDto;
 import ru.practicum.service.UserAdminService;
-import ru.practicum.user.dto.UserDto;
-import ru.practicum.user.dto.UserRequestDto;
-import ru.practicum.user.dto.UserShortDto;
 
 import java.util.List;
 

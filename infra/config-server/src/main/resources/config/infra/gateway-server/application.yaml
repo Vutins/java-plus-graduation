@@ -116,7 +116,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: "*" # Открываем все эндпоинты для надежности в CI
+        include: "*"
   endpoint:
     gateway:
       enabled: true

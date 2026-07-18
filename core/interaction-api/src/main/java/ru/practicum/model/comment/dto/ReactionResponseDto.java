@@ -2,7 +2,7 @@ package ru.practicum.model.comment.dto;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.user.dto.UserShortDto;
+import ru.practicum.model.user.dto.UserShortDto;
 
 @Data
 @Builder

@@ -10,10 +10,10 @@ import ru.practicum.exception.ConflictException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.exception.ValidationException;
 import ru.practicum.mapper.UserMapper;
+import ru.practicum.model.user.dto.UserDto;
+import ru.practicum.model.user.dto.UserRequestDto;
+import ru.practicum.model.user.dto.UserShortDto;
 import ru.practicum.repository.UserRepository;
-import ru.practicum.user.dto.UserDto;
-import ru.practicum.user.dto.UserRequestDto;
-import ru.practicum.user.dto.UserShortDto;
 import java.util.List;
 
 @Slf4j
