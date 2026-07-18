@@ -5,7 +5,7 @@ spring:
   application:
     name: gateway-server
   config:
-    import: "optional:configserver:"
+    import: "configserver:"
   cloud:
     config:
       fail-fast: true
@@ -15,6 +15,109 @@ spring:
       discovery:
         enabled: true
         service-id: config-server
+
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        # ==========================================
+        # 1. ADMIN ROUTES
+        # ==========================================
+        - id: admin-categories-route
+          uri: lb://CATEGORY-SERVICE
+          predicates:
+            - Path=/admin/categories/**
+
+        - id: admin-compilations-route
+          uri: lb://COMPILATION-SERVICE
+          predicates:
+            - Path=/admin/compilations/**
+
+        - id: admin-events-route
+          uri: lb://EVENT-SERVICE
+          predicates:
+            - Path=/admin/events/**
+
+        - id: admin-comments-route
+          uri: lb://COMMENT-SERVICE
+          predicates:
+            - Path=/admin/comments/**
+
+        - id: admin-users-route
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/admin/users/**
+
+        # ==========================================
+        # 2. PRIVATE / USER-SPECIFIC ROUTES
+        # ==========================================
+        - id: private-events-route
+          uri: lb://EVENT-SERVICE
+          predicates:
+            - Path=/users/*/events/**
+
+        - id: private-requests-route
+          uri: lb://REQUEST-SERVICE
+          predicates:
+            - Path=/users/*/requests/**
+
+        - id: client-requests-route
+          uri: lb://REQUEST-SERVICE
+          predicates:
+            - Path=/users/client/**
+
+        - id: internal-requests-route
+          uri: lb://REQUEST-SERVICE
+          predicates:
+            - Path=/users/internal/**
+
+        - id: private-comments-create-update-route
+          uri: lb://COMMENT-SERVICE
+          predicates:
+            - Path=/events/*/users/*/comment/**
+
+        - id: public-comments-by-event-route
+          uri: lb://COMMENT-SERVICE
+          predicates:
+            - Path=/events/*/comments/**
+
+        # ==========================================
+        # 3. PUBLIC / GENERAL ROUTES
+        # ==========================================
+        - id: public-comments-reactions-route
+          uri: lb://COMMENT-SERVICE
+          predicates:
+            - Path=/comments/**
+
+        - id: public-categories-route
+          uri: lb://CATEGORY-SERVICE
+          predicates:
+            - Path=/categories/**
+
+        - id: public-compilations-route
+          uri: lb://COMPILATION-SERVICE
+          predicates:
+            - Path=/compilations/**
+
+        - id: public-events-route
+          uri: lb://EVENT-SERVICE
+          predicates:
+            - Path=/events/**
+
+        # ==========================================
+        # 4. STATS SERVICE
+        # ==========================================
+        - id: stats-hit-route
+          uri: lb://STATS-SERVER
+          predicates:
+            - Path=/hit
+
+        - id: stats-get-route
+          uri: lb://STATS-SERVER
+          predicates:
+            - Path=/stats
+
 
 eureka:
   client:
