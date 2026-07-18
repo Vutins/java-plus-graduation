@@ -12,7 +12,7 @@ spring:
     gateway:
       discovery:
         locator:
-          enabled: true  # Включает автоматическое создание маршрутов для сервисов, зарегистрированных в Eureka
+          enabled: true
 
       routes:
         # Маршруты для Admin контроллеров
