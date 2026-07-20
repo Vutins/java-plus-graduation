@@ -22,26 +22,36 @@ spring:
           uri: lb://CATEGORY-SERVICE
           predicates:
             - Path=/admin/categories/**
+          filters:
+            - RewritePath=/admin/categories/(?<segment>.*), /admin/categories/$\{segment}
 
         - id: admin-compilations-route
           uri: lb://COMPILATION-SERVICE
           predicates:
             - Path=/admin/compilations/**
+          filters:
+            - RewritePath=/admin/compilations/(?<segment>.*), /admin/compilations/$\{segment}
 
         - id: admin-events-route
           uri: lb://EVENT-SERVICE
           predicates:
             - Path=/admin/events/**
+          filters:
+            - RewritePath=/admin/events/(?<segment>.*), /admin/events/$\{segment}
 
         - id: admin-comments-route
           uri: lb://COMMENT-SERVICE
           predicates:
             - Path=/admin/comments/**
+          filters:
+            - RewritePath=/admin/comments/(?<segment>.*), /admin/comments/$\{segment}
 
         - id: admin-users-route
           uri: lb://USER-SERVICE
           predicates:
             - Path=/admin/users/**
+          filters:
+            - RewritePath=/admin/users/(?<segment>.*), /admin/users/$\{segment}
 
         # ==========================================
         # 2. PRIVATE / USER-SPECIFIC ROUTES
