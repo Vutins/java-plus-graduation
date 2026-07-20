@@ -9,7 +9,7 @@ spring:
     password: stat
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     show-sql: true
     properties:
       hibernate:
@@ -23,3 +23,9 @@ logging:
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
     org.springframework.jdbc.core: DEBUG
+
+eureka:
+  instance:
+    preferIpAddress: true
+    instance-id: "${spring.application.name}:${random.value}"  # уникальный ID экземпляра
+    hostname: localhost
