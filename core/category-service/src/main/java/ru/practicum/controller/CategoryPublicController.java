@@ -1,5 +1,6 @@
 package ru.practicum.controller;
 
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -25,9 +26,9 @@ public class CategoryPublicController {
         return ResponseEntity.ok(categoryPublicService.getListCategories(PageRequest.of(from / size, size)));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<CategoryDto> getCategoryById(@PathVariable Long id) {
+    @GetMapping("/{catId}")
+    public CategoryDto getCategoryById(@PathVariable @Positive Long id) {
         log.info("запрос на получение категории с id = {}", id);
-        return ResponseEntity.ok(categoryPublicService.getCategoryById(id));
+        return categoryPublicService.getCategoryById(id);
     }
 }
