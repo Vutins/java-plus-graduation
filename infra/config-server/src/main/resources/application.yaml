@@ -15,6 +15,10 @@ spring:
             - classpath:config/stats/{application}
             - classpath:config/infra/{application}
 eureka:
+  instance:
+    preferIpAddress: true
+    instance-id: "${spring.application.name}:${random.value}"  # уникальный ID экземпляра
+    hostname: localhost
   client:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/

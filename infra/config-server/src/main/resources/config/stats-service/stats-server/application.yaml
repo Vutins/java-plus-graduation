@@ -18,14 +18,15 @@ spring:
         jdbc:
           lob:
             non_contextual_creation: true
+
+eureka:
+  instance:
+    preferIpAddress: true
+    instance-id: "${spring.application.name}:${random.value}"
+    hostname: localhost
+
 logging:
   level:
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
     org.springframework.jdbc.core: DEBUG
-
-eureka:
-  instance:
-    preferIpAddress: true
-    instance-id: "${spring.application.name}:${random.value}"  # уникальный ID экземпляра
-    hostname: localhost
