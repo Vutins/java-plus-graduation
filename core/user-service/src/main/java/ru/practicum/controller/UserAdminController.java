@@ -47,9 +47,9 @@ public class UserAdminController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<UserDto> getUserById(@PathVariable @Positive Long id) {
+    public UserDto getUserById(@PathVariable @Positive Long id) {
         log.info("запрос на получение пользователя по id");
-        return ResponseEntity.ok(userAdminService.getUserById(id));
+        return userAdminService.getUserById(id);
     }
 
     @GetMapping("client/{userId}")

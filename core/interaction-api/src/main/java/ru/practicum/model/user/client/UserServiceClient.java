@@ -16,7 +16,7 @@ public interface UserServiceClient {
     @GetMapping("/{userId}")
     UserDto getUserById(@PathVariable @Positive Long id);
 
-    @GetMapping("/{userId}")
+    @GetMapping("client/{userId}")
     UserShortDto getUserShortById(@PathVariable @Positive Long id);
 
     @GetMapping("/client/exist/{userId}")
