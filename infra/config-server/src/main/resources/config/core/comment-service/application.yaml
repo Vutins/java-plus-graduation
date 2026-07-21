@@ -13,7 +13,6 @@ spring:
       ddl-auto: create-drop
       dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: false
-
 eureka:
   instance:
     preferIpAddress: true
