@@ -2,21 +2,21 @@ server:
   port: 8080
 
 spring:
+  application:
+    name: gateway-server
+
   cloud:
     config:
       discovery:
         enabled: true
+
     gateway:
-      httpclient:
-        connect-timeout: 5000
-        response-timeout: 60s
       discovery:
         locator:
-          enabled: true
+          enabled: true  # Включает автоматическое создание маршрутов для сервисов, зарегистрированных в Eureka
+
       routes:
-        # ==========================================
-        # 1. ADMIN ROUTES (без изменений)
-        # ==========================================
+        # Маршруты для Admin контроллеров
         - id: admin-categories-route
           uri: lb://category-service
           predicates:
@@ -38,12 +38,12 @@ spring:
           filters:
             - RewritePath=/admin/events/(?<segment>.*), /admin/events/$\{segment}
 
-        - id: admin-comments-route
-          uri: lb://comment-service
+        - id: admin-reviews-route
+          uri: lb://review-service
           predicates:
-            - Path=/admin/comments/**
+            - Path=/admin/reviews/**
           filters:
-            - RewritePath=/admin/comments/(?<segment>.*), /admin/comments/$\{segment}
+            - RewritePath=/admin/reviews/(?<segment>.*), /admin/reviews/$\{segment}
 
         - id: admin-users-route
           uri: lb://user-service
@@ -52,92 +52,52 @@ spring:
           filters:
             - RewritePath=/admin/users/(?<segment>.*), /admin/users/$\{segment}
 
-        # ==========================================
-        # 2. PRIVATE / USER-SPECIFIC ROUTES
-        # ==========================================
-        - id: private-events-route
-          uri: lb://event-service
-          predicates:
-            - Path=/users/*/events/**
-
-        # ⬇️ НОВЫЙ МАРШРУТ ДЛЯ /users/*/client/**
-        - id: private-client-route
-          uri: lb://request-service
-          predicates:
-            - Path=/users/*/client/**
-
+        # Маршруты для Private контроллеров
         - id: private-requests-route
           uri: lb://request-service
           predicates:
-            - Path=/users/*/requests/**
+            - Path=/users/{userId}/requests/**, /users/{userId}/events/{eventId}/requests
+          filters:
+            - RewritePath=/users/(?<userId>\d+)/(?<segment>.*), /users/$\{userId}/$\{segment}
 
-        - id: client-requests-route
-          uri: lb://request-service
+        - id: private-events-route
+          uri: lb://event-service
           predicates:
-            - Path=/users/client/**
+            - Path=/users/{userId}/events/**
 
-        - id: internal-requests-route
-          uri: lb://request-service
+        - id: private-reviews-route
+          uri: lb://review-service
           predicates:
-            - Path=/users/internal/**
+            - Path=/users/{userId}/reviews/**
+          filters:
+            - RewritePath=/users/(?<userId>\\d+)/reviews/(?<segment>.*), /users/$\{userId}/reviews/$\{segment}
 
-        - id: private-comments-create-update-route
-          uri: lb://comment-service
-          predicates:
-            - Path=/events/*/users/*/comment/**
-
-        - id: public-comments-by-event-route
-          uri: lb://comment-service
-          predicates:
-            - Path=/events/*/comments/**
-
-        # ==========================================
-        # 3. PUBLIC / GENERAL ROUTES
-        # ==========================================
-        - id: public-comments-reactions-route
-          uri: lb://comment-service
-          predicates:
-            - Path=/comments/**
-
+        # Маршруты для Public контроллеров
         - id: public-categories-route
           uri: lb://category-service
           predicates:
             - Path=/categories/**
+          filters:
+            - RewritePath=/categories/(?<segment>.*), /categories/$\{segment}
 
         - id: public-compilations-route
           uri: lb://compilation-service
           predicates:
             - Path=/compilations/**
+          filters:
+            - RewritePath=/compilations/(?<segment>.*), /compilations/$\{segment}
 
         - id: public-events-route
           uri: lb://event-service
           predicates:
             - Path=/events/**
+          filters:
+            - RewritePath=/events/(?<segment>.*), /events/$\{segment}
 
-        # ==========================================
-        # 4. STATS SERVICE
-        # ==========================================
-        - id: stats-hit-route
-          uri: lb://stats-server
+        - id: public-reviews-route
+          uri: lb://review-service
           predicates:
-            - Path=/hit
+            - Path=/reviews/**
+          filters:
+            - RewritePath=/reviews/(?<segment>.*), /reviews/$\{segment}
 
-        - id: stats-get-route
-          uri: lb://stats-server
-          predicates:
-            - Path=/stats
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-  endpoint:
-    gateway:
-      enabled: true
-
-eureka:
-  instance:
-    preferIpAddress: true
-    instance-id: "${spring.application.name}:${random.value}"  # уникальный ID экземпляра
-    hostname: localhost
