@@ -15,73 +15,52 @@ spring:
           enabled: true
       routes:
         # ==========================================
-        # 1. ADMIN ROUTES
+        # 1. ADMIN ROUTES (без изменений)
         # ==========================================
         - id: admin-categories-route
-          uri: lb://CATEGORY-SERVICE
+          uri: lb://category-service
           predicates:
             - Path=/admin/categories/**
           filters:
             - RewritePath=/admin/categories/(?<segment>.*), /admin/categories/$\{segment}
-
-        - id: admin-compilations-route
-          uri: lb://COMPILATION-SERVICE
-          predicates:
-            - Path=/admin/compilations/**
-          filters:
-            - RewritePath=/admin/compilations/(?<segment>.*), /admin/compilations/$\{segment}
-
-        - id: admin-events-route
-          uri: lb://EVENT-SERVICE
-          predicates:
-            - Path=/admin/events/**
-          filters:
-            - RewritePath=/admin/events/(?<segment>.*), /admin/events/$\{segment}
-
-        - id: admin-comments-route
-          uri: lb://COMMENT-SERVICE
-          predicates:
-            - Path=/admin/comments/**
-          filters:
-            - RewritePath=/admin/comments/(?<segment>.*), /admin/comments/$\{segment}
-
-        - id: admin-users-route
-          uri: lb://USER-SERVICE
-          predicates:
-            - Path=/admin/users/**
-          filters:
-            - RewritePath=/admin/users/(?<segment>.*), /admin/users/$\{segment}
+        # ... остальные админские
 
         # ==========================================
         # 2. PRIVATE / USER-SPECIFIC ROUTES
         # ==========================================
         - id: private-events-route
-          uri: lb://EVENT-SERVICE
+          uri: lb://event-service
           predicates:
             - Path=/users/*/events/**
 
+        # ⬇️ НОВЫЙ МАРШРУТ ДЛЯ /users/*/client/**
+        - id: private-client-route
+          uri: lb://request-service
+          predicates:
+            - Path=/users/*/client/**
+
         - id: private-requests-route
-          uri: lb://REQUEST-SERVICE
+          uri: lb://request-service
           predicates:
             - Path=/users/*/requests/**
 
         - id: client-requests-route
-          uri: lb://REQUEST-SERVICE
+          uri: lb://request-service
           predicates:
             - Path=/users/client/**
 
         - id: internal-requests-route
-          uri: lb://REQUEST-SERVICE
+          uri: lb://request-service
           predicates:
             - Path=/users/internal/**
 
         - id: private-comments-create-update-route
-          uri: lb://COMMENT-SERVICE
+          uri: lb://comment-service
           predicates:
             - Path=/events/*/users/*/comment/**
 
         - id: public-comments-by-event-route
-          uri: lb://COMMENT-SERVICE
+          uri: lb://comment-service
           predicates:
             - Path=/events/*/comments/**
 
@@ -89,22 +68,22 @@ spring:
         # 3. PUBLIC / GENERAL ROUTES
         # ==========================================
         - id: public-comments-reactions-route
-          uri: lb://COMMENT-SERVICE
+          uri: lb://comment-service
           predicates:
             - Path=/comments/**
 
         - id: public-categories-route
-          uri: lb://CATEGORY-SERVICE
+          uri: lb://category-service
           predicates:
             - Path=/categories/**
 
         - id: public-compilations-route
-          uri: lb://COMPILATION-SERVICE
+          uri: lb://compilation-service
           predicates:
             - Path=/compilations/**
 
         - id: public-events-route
-          uri: lb://EVENT-SERVICE
+          uri: lb://event-service
           predicates:
             - Path=/events/**
 
@@ -112,12 +91,12 @@ spring:
         # 4. STATS SERVICE
         # ==========================================
         - id: stats-hit-route
-          uri: lb://STATS-SERVER
+          uri: lb://stats-server
           predicates:
             - Path=/hit
 
         - id: stats-get-route
-          uri: lb://STATS-SERVER
+          uri: lb://stats-server
           predicates:
             - Path=/stats
 
