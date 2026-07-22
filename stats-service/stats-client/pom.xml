@@ -11,7 +11,6 @@
     <artifactId>stats-client</artifactId>
     <name>stats-client</name>
 
-
     <dependencies>
         <dependency>
             <groupId>ru.practicum</groupId>
