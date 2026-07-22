@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.EndpointHitDto;
+import ru.practicum.explore_with_me.EndpointHitDto;
 import ru.practicum.explore_with_me.StatsClient;
 import ru.practicum.explore_with_me.ViewStatsDto;
 import ru.practicum.explore_with_me.event.entity.Event;

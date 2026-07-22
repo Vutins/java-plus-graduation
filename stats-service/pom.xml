@@ -6,11 +6,10 @@
         <groupId>ru.practicum</groupId>
         <artifactId>java-plus-graduation</artifactId>
         <version>0.0.1-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>stats</artifactId>
-    <name>stat</name>
+    <artifactId>stats-service</artifactId>
+    <name>stats-service</name>
     <packaging>pom</packaging>
 
     <modules>
