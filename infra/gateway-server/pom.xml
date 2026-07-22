@@ -25,7 +25,6 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
-        <!-- ВАЖНО: Версия НЕ указывается! Она берется из spring-cloud-dependencies (2023.0.4 -> 4.1.6) -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-gateway</artifactId>
