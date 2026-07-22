@@ -32,11 +32,6 @@
             <artifactId>spring-cloud-starter-gateway</artifactId>
             <version>4.3.2</version>
         </dependency>
-
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
-        </dependency>
     </dependencies>
 
     <build>
@@ -52,15 +47,6 @@
                         </goals>
                     </execution>
                 </executions>
-<!--                <configuration>-->
-<!--                    <excludes>-->
-<!--                        <exclude>-->
-<!--                            <groupId>org.projectlombok</groupId>-->
-<!--                            <artifactId>lombok</artifactId>-->
-<!--                        </exclude>-->
-<!--                    </excludes>-->
-<!--                    <mainClass>ru.practicum.GatewayServer</mainClass>-->
-<!--                </configuration>              -->
             </plugin>
         </plugins>
     </build>
