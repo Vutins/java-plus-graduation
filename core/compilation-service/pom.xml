@@ -46,7 +46,7 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
-                    <mainClass>ru.practicum.CompilationStarter</mainClass>
+                    <mainClass>ru.practicum.explore_with_me.compilation.CompilationStarter</mainClass>
                 </configuration>
             </plugin>
 

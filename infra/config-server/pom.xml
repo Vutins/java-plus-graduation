@@ -54,7 +54,7 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
-                    <mainClass>ru.practicum.ConfigServer</mainClass>
+                    <mainClass>ru.practicum.explore_with_me.ConfigServer</mainClass>
                 </configuration>
             </plugin>
         </plugins>

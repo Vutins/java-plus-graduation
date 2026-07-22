@@ -47,7 +47,7 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
-                    <mainClass>ru.practicum.UserStarter</mainClass>
+                    <mainClass>ru.practicum.explore_with_me.user.UserStarter</mainClass>
                 </configuration>
             </plugin>
 

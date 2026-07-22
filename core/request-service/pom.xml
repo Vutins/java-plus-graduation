@@ -46,7 +46,7 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
-                    <mainClass>ru.practicum.RequestStarter</mainClass>
+                    <mainClass>ru.practicum.explore_with_me.request.RequestStarter</mainClass>
                 </configuration>
             </plugin>
 

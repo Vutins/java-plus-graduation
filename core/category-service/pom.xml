@@ -47,7 +47,7 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
-                    <mainClass>ru.practicum.CategoryStarter</mainClass>
+                    <mainClass>ru.practicum.explore_with_me.category.CategoryStarter</mainClass>
                 </configuration>
             </plugin>
 

@@ -46,7 +46,7 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
-                    <mainClass>ru.practicum.EventStarter</mainClass>
+                    <mainClass>ru.practicum.explore_with_me.event.EventStarter</mainClass>
                 </configuration>
             </plugin>
 

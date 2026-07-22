@@ -54,7 +54,7 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
-                    <mainClass>ru.practicum.DiscoveryServer</mainClass>
+                    <mainClass>ru.practicum.explore_with_me.DiscoveryServer</mainClass>
                 </configuration>
             </plugin>
         </plugins>
