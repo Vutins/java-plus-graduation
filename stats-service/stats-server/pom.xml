@@ -59,7 +59,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>ru.practicum.explore_with_me.StatsServiceApplication</mainClass>
+                    <mainClass>ru.practicum.explore_with_me.StatsServerApplication</mainClass>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>
