@@ -13,7 +13,7 @@ spring:
     gateway:
       discovery:
         locator:
-          enabled: true
+          enabled: true  # Включает автоматическое создание маршрутов для сервисов, зарегистрированных в Eureka
 
       routes:
         # Маршруты для Admin контроллеров
@@ -100,3 +100,4 @@ spring:
             - Path=/reviews/**
           filters:
             - RewritePath=/reviews/(?<segment>.*), /reviews/$\{segment}
+

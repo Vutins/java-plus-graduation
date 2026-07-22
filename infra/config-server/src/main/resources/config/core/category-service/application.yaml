@@ -3,9 +3,9 @@ server:
 
 spring:
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://postgres:5432/postgres}
-    username: ${SPRING_DATASOURCE_USERNAME:postgres}
-    password: ${SPRING_DATASOURCE_PASSWORD:password}
+    url: jdbc:postgresql://main-service-db:5432/main
+    username: dbuser
+    password: 12345
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -13,9 +13,3 @@ spring:
       ddl-auto: create-drop
       dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: false
-
-eureka:
-  instance:
-    preferIpAddress: true
-    instance-id: "${spring.application.name}:${random.value}"
-    hostname: localhost
