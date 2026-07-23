@@ -23,12 +23,10 @@ public class Comment {
     @Column(name = "text", nullable = false)
     private String text;
 
-    @ManyToOne
-    @JoinColumn(name = "event_id", nullable = false)
+    @Column(name = "event_id", nullable = false)
     private Long eventId;
 
-    @ManyToOne
-    @JoinColumn(name = "author_id", nullable = false)
+    @Column(name = "author_id", nullable = false)
     private Long authorId;
 
     @Column(name = "created_on", nullable = false)
