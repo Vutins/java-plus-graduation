@@ -2,7 +2,7 @@
 
 [![Java](https://img.shields.io/badge/Java-21-blue)](https://www.oracle.com/java/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.4-brightgreen)](https://spring.io/projects/spring-boot)
-[![Spring Cloud](https://img.shields.io/badge/Spring%20Cloud-2023.0.4-green)](https://spring.io/projects/spring-cloud)
+[![Spring Cloud](https://img.shields.io/badge/Spring%20Cloud-2023.0.3-green)](https://spring.io/projects/spring-cloud)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-42.7.3-brightblue)](https://www.postgresql.org/)
 
 ## 📋 О проекте
@@ -58,6 +58,16 @@
 - Avro 1.11.3
 - gRPC 1.63.0 + Protobuf 3.23.4
 
+### 📖 API Docs
+- SpringDoc OpenAPI 2.6.0 (Swagger UI)
+
+### 🧪 Тестирование & Quality
+- JUnit 5 (Spring Boot Test)
+- Hamcrest 2.2
+- JaCoCo 0.8.12 (80%+ coverage)
+- SpotBugs 4.8.5.0
+- Checkstyle 10.3
+
 ### 🔨 Maven Plugins
 - Compiler 3.11.0
 - Surefire 3.1.2
@@ -78,7 +88,7 @@
 
 **Общая конфигурация каждого core сервиса**. StatsClient + Load Balancing + таймауты.
 
-### ReviewConfig (аналогично во всех сервисах)
+### CommentConfig (аналогично во всех сервисах)
 
 ```java
 @Configuration
@@ -116,7 +126,13 @@ public class CommentConfig {
 | `RestClient`        | **HTTP 2.0 клиент**          | Современная замена RestTemplate |
 
 
-Для всех сервисов используются bootstrap схожего вида
+Для всех сервисов используются Dockerfile и bootstrap схожего вида
+
+```dockerfile
+FROM eclipse-temurin:21-jdk-alpine
+COPY target/xxx-service-0.0.1-SNAPSHOT.jar app.jar
+ENTRYPOINT ["java", "-jar", "app.jar"]
+```
 
 ```yaml
 spring:
@@ -164,27 +180,22 @@ Eureka запускается на порту 8761 и предоставляет
 
 **Entity:**
 ```java
-@Data
 @Entity
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "users")
+@ToString
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Builder(toBuilder = true)
 public class User {
-
     @Id
-    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     Long id;
-
-    @Column(name = "email")
-    @Email(message = "неправильный формат email")
-    @NotBlank(message = "email не может быть пустым")
+    @Column(unique = true)
     String email;
-
-    @Column(name = "name")
-    @NotBlank(message = "name не может быть пустым")
     String name;
 }
 ```
@@ -192,58 +203,45 @@ public class User {
 **DTO:**
 ```java
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserRequestDto {
-
-    @Email(message = "неправильный формат email")
-    String email;
-    String name;
+public class NewUserRequest {
+    @NotBlank
+    @Size(min = 2, max = 250)
+    private String name;
+    @NotBlank
+    @Email
+    @Size(min = 6, max = 254)
+    private String email;
 }
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserDto {
-
-    Long id;
-    @Email(message = "неправильный формат email")
-    String email;
-    String name;
+    private Long id;
+    private String name;
+    private String email;
 }
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserShortDto {
-
-    Long id;
-    String name;
+    private Long id;
+    private String name;
 }
 ```
 
 ### Клиент сервиса:
 ```java
-@FeignClient(
-        name = "user-service",
-        path = "/admin/users"
-)
+@FeignClient(name = "user-service", path = "/admin/users")
 public interface UserServiceClient {
-
-    @GetMapping("/{userId}")
-    UserDto getUserById(@PathVariable @Positive Long id);
-
-    @GetMapping("/{userId}")
-    UserShortDto getUserShortById(@PathVariable @Positive Long id);
+@GetMapping("/client/{userId}")
+UserShortDto getUserShortDtoClientById(Long userId);
 
     @GetMapping("/client/exist/{userId}")
-    void validateUserExistingById(@PathVariable Long userId);
+    void validateUserExistingById(Long userId);
 }
 ```
 
@@ -283,24 +281,15 @@ public interface UserServiceClient {
 
 **Entity:**
 ```java
-@Data
 @Entity
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "categories")
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Category {
-
     @Id
-    @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
-
-    @NotNull
-    @NotBlank
-    @Column(name = "name", nullable = false, unique = true)
-    String name;
+    @Column(name = "category_id")
+    private Long id;
+    @Column(nullable = false, unique = true)
+    private String name;
 }
 ```
 
@@ -325,109 +314,67 @@ public class Category {
 
 **Entity:**
 ```java
-@Data
-@Entity
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Table(name = "requests")
-@FieldDefaults(level = AccessLevel.PRIVATE)
-public class ParticipationRequest {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+@Entity @Table("participation_requests")
+@Builder public class ParticipationRequest {
+    @Id 
     Long id;
-
-    @Column(name = "created", nullable = false)
     LocalDateTime created;
-
-    @Column(name = "event_id", nullable = false)
     Long eventId;
-
-    @Column(name = "requester_id", nullable = false)
     Long requesterId;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    RequestStatus status;
+    RequestStatus status; // PENDING, CONFIRMED, REJECTED, CANCELED
 }
 ```
 
 **DTO:**
 ```java
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ParticipationRequestDto {
-    String created;
-    Long event;
-    Long id;
-    Long requester;
-    String status;
+    private Long id;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime created;
+    private Long event;
+    private Long requester;
+    private String status;
 }
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class EventRequestStatusUpdateRequest {
-    List<Long> requestIds;
-    String status;
+    private Set<Long> requestIds;
+    private RequestStatus status;
 }
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class EventRequestStatusUpdateResult {
-    List<ParticipationRequestDto> confirmedRequests;
-    List<ParticipationRequestDto> rejectedRequests;
+    private List<ParticipationRequestDto> confirmedRequests;
+    private List<ParticipationRequestDto> rejectedRequests;
 }
 
 public enum RequestStatus {
-    PENDING,
-    CONFIRMED,
-    REJECTED,
-    CANCELED
+    PENDING, CONFIRMED, REJECTED, CANCELED;
+
+    @Override
+    public String toString() {
+        return name();
+    }
 }
 ```
 
 ### Клиент сервиса:
 ```java
-@FeignClient(
-        name = "request-service",
-        path = "/users"
-)
+@FeignClient(name = "request-service", path = "/users")
 public interface RequestServiceClient {
-
     @GetMapping("/client/count")
     Map<Long, List<ParticipationRequestDto>> getConfirmedRequestsCount(
-            @RequestParam("eventIds") List<Long> eventIds,
-            @RequestParam("requestStatus") RequestStatus requestStatus);
+            List<Long> eventIds, RequestStatus status);
 
     @GetMapping("/{userId}/client/event/{eventId}")
-    ParticipationRequestDto getUserRequestByUserIdAndEventId(
-            @PathVariable("userId") @Positive Long userId,
-            @PathVariable("eventId") @Positive Long eventId);
-
-    @PatchMapping("{userId}/client/event/{eventId}")
-    EventRequestStatusUpdateResult changeRequestStatus(@PathVariable Long userId,
-                                                       @PathVariable Long eventId,
-                                                       @RequestBody @Valid @NotNull EventRequestStatusUpdateRequest request);
-
-    @GetMapping("{userId}/client/list/requests/event/{eventId}")
-    List<ParticipationRequestDto> getEventParticipants(@PathVariable Long userId, @PathVariable Long eventId);
-
-    @GetMapping("/internal/events/{eventId}/count")
-    Long getConfirmedRequestsCountByEventId(@PathVariable Long eventId);
-
-    @GetMapping("/internal/events/count")
-    List<Object[]> countConfirmedRequestsForEvents(@RequestBody List<Long> events);
+    ParticipationRequestDto getByUserAndEvent(Long userId, Long eventId);
 }
 ```
 
@@ -445,92 +392,87 @@ public interface RequestServiceClient {
 
 ### Endpoints (Gateway: /admin/comments, /users/{userId}/comments, /comments)
 
-| Метод | Путь                                                   | Описание | Доступ | Параметры |
-|-------|--------------------------------------------------------|----------|--------|-----------|
-| `GET` | `/admin/comments`                                      | Поиск отзывов | Admin | `text, users, events, from=0, size=10` |
-| `DELETE` | `/admin/comments/{commentId}`                          | Удалить отзыв | Admin | - |
-| `POST` | `/users/{userId}/comments/events/{eventId}`            | Создать отзыв | Private | `NewReviewDto` |
-| `PATCH` | `/users/{userId}/comments/{commentId}`                 | Обновить отзыв | Private | `UpdateReviewDto` |
+| Метод | Путь | Описание | Доступ | Параметры |
+|-------|------|----------|--------|-----------|
+| `GET` | `/admin/comments` | Поиск отзывов | Admin | `text, users, events, from=0, size=10` |
+| `DELETE` | `/admin/comments/{commentId}` | Удалить отзыв | Admin | - |
+| `POST` | `/users/{userId}/comments/events/{eventId}` | Создать отзыв | Private | `NewCommentDto` |
+| `PATCH` | `/users/{userId}/comments/{commentId}` | Обновить отзыв | Private | `UpdateCommentDto` |
 | `DELETE` | `/users/{userId}/comments/{commentId}/events/{eventId}` | Удалить свой отзыв | Private | - |
-| `GET` | `/users/{userId}/comments/{commentId}`                 | Мой отзыв по ID | Private | - |
-| `GET` | `/users/{userId}/comments`                             | Мои отзывы | Private | - |
-| `GET` | `/comments/{eventId}`                                  | Отзывы события | Public | `?from=0&size=10` |
+| `GET` | `/users/{userId}/comments/{commentId}` | Мой отзыв по ID | Private | - |
+| `GET` | `/users/{userId}/comments` | Мои отзывы | Private | - |
+| `GET` | `/comments/{eventId}` | Отзывы события | Public | `?from=0&size=10` |
 
 ### Модели данных
 
 **Entity:**
 ```java
-@Data
 @Entity
+@Table(name = "comments")
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "comments")
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Comment {
-
     @Id
-    @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
-
-    @Column(name = "commentator_id", nullable = false)
-    Long commentatorId;
-
-    @Column(name = "event_id", nullable = false)
-    Long eventId;
-
-    @NotNull
-    @PastOrPresent
-    @Column(name = "created", nullable = false)
-    LocalDateTime created;
-
+    @Column(name = "comment_id")
+    private Long id;
     @Column(name = "text", nullable = false)
-    @NotBlank(message = "текст комментария не может быть пустым")
-    String text;
-
-    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    List<Reaction> reactions = new ArrayList<>();
+    private String text;
+    @ManyToOne
+    @JoinColumn(name = "event_id", nullable = false)
+    private Long eventId;
+    @ManyToOne
+    @JoinColumn(name = "author_id", nullable = false)
+    private Long authorId;
+    @Column(name = "created_on", nullable = false)
+    @CreationTimestamp
+    private LocalDateTime createdOn;
+    @UpdateTimestamp
+    @Column(name = "last_updated_on")
+    private LocalDateTime lastUpdatedOn;
 }
 ```
 
 **DTO:**
 ```java
-@Data
-@Builder
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
-public class CommentRequestDto {
-    @NotBlank(message = "Комментарий не может быть пустой")
-    String text;
+public class NewCommentDto {
+    @NotBlank
+    @Size(min = 2, max = 2000)
+    private String text;
 }
 
-@Data
-@Builder
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@Builder
 public class CommentDto {
-
-    Long id;
-    Long commentatorId;
-    Long eventId;
-    LocalDateTime created;
-    String text;
+    private Long id;
+    private String text;
+    private Long eventId;
+    private Long authorId;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createdOn;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime lastUpdatedOn;
 }
 
-@Data
-@Builder
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
-public class CommentResponseDto {
-
-    Long commentatorId;
-    LocalDateTime created;
-    String text;
+@Builder
+public class UpdateCommentDto {
+    @NotBlank
+    @Size(min = 2, max = 2000)
+    private String text;
 }
 ```
 
@@ -557,34 +499,31 @@ public class CommentResponseDto {
 
 **Entity:**
 ```java
-@Data
 @Entity
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "compilations")
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode(of = "id")
 public class Compilation {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "compilation_id")
     Long id;
-
-    @Column(name = "pinned", nullable = false)
     Boolean pinned;
-
-    @Column(name = "title", unique = true, nullable = false, length = 50)
+    @Size(max = 50)
+    @Column(name = "title", nullable = false)
     String title;
-
-    @ElementCollection(targetClass = Locale.class)
+    @ElementCollection(targetClass = Long.class)
     @CollectionTable(
-            name = "compilations_events",
+            name = "compilation_events",
             joinColumns = @JoinColumn(name = "compilation_id")
     )
     @Builder.Default
     @Column(name = "event_id")
-    Set<Long> eventsId = new HashSet<>();
+    private Set<Long> eventsId = new HashSet<>();
 }
 ```
 
@@ -594,8 +533,7 @@ public class Compilation {
 @NoArgsConstructor
 @AllArgsConstructor
 public class CompilationDto {
-
-    private List<EventShortDto> events;
+    private Set<EventShortDto> events;
     private Long id;
     private Boolean pinned;
     private String title;
@@ -605,13 +543,10 @@ public class CompilationDto {
 @NoArgsConstructor
 @AllArgsConstructor
 public class NewCompilationDto {
-
-    private Set<Long> eventsId;
-
-    private Boolean pinned;
-
-    @NotBlank(message = "Название подборки должно быть указано")
-    @Length(min = 1, max = 50, message = "Минимальная длина названия подборки 1 символ, максимальная 50 символов.")
+    private Set<Long> events;
+    private Boolean pinned = false;
+    @NotBlank
+    @Size(min = 1, max = 50)
     private String title;
 }
 
@@ -619,13 +554,10 @@ public class NewCompilationDto {
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateCompilationRequest {
-
-    private Set<Long> eventsId;
-
+    private Set<Long> events;
     private Boolean pinned;
-
+    @Size(max = 50)
     private String title;
-
 }
 ```
 
@@ -658,75 +590,56 @@ public class UpdateCompilationRequest {
 
 **Entity:**
 ```java
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Entity
 @Table(name = "events")
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Event {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "event_id")
     Long id;
-
-    @Column(name = "annotation",
-            nullable = false,
-            columnDefinition = "VARCHAR(2000)")
+    @Column(name = "annotation", length = 2000)
     String annotation;
-
     @Column(name = "category_id", nullable = false)
     Long categoryId;
-
-    @Column(name = "created_on")
+    @Transient
+    private Long views;
+    @Column(name = "confirmed_requests")
+    Integer confirmedRequests;
+    @Column(name = "created_on", nullable = false)
     LocalDateTime createdOn;
-
-    @Column(name = "initiator_id", nullable = false)
-    Long initiatorId;
-
-    @Embedded
-    Location location;
-
-    @Column(name = "event_date", nullable = false)
-    LocalDateTime eventDate;
-
-    @Column(name = "description", nullable = false, columnDefinition = "VARCHAR(7000)")
-    String description;
-
-    @Column(name = "paid")
-    Boolean paid;
-
-    @Column(name = "participant_limit")
-    Integer participantLimit;
-
     @Column(name = "published_on")
     LocalDateTime publishedOn;
-
+    @Column(name = "description", length = 7000)
+    String description;
+    @Column(name = "event_date")
+    LocalDateTime eventDate;
+    @Column(name = "initiator_id", nullable = false)
+    Long initiatorId;
+    @Embedded
+    Location location;
+    Boolean paid;
+    @Column(name = "participant_limit")
+    Integer participantLimit;
+    @Enumerated(value = EnumType.STRING)
+    EventState state;
     @Column(name = "request_moderation")
     Boolean requestModeration;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "state", nullable = false)
-    State state;
-
-    @Column(name = "title", nullable = false)
     String title;
 }
 
-@Data
-@Embeddable
+@Getter
+@Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "locations")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Location {
-
-    @Column(name = "lat", nullable = false)
     Float lat;
-
-    @Column(name = "lon", nullable = false)
     Float lon;
 }
 ```
@@ -734,132 +647,139 @@ public class Location {
 **DTO:**
 ```java
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-@Builder
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class EventFullDto {
-    String annotation;
-    CategoryDto category;
-    Long confirmedRequests;
-    String createdOn;
-    String description;
-    String eventDate;
-    Long id;
-    UserShortDto initiator;
-    LocationDto location;
-    Boolean paid;
-    Integer participantLimit;
-    String publishedOn;
-    Boolean requestModeration;
-    String state;
-    String title;
-    Long views;
+    private Long id;
+    private String annotation;
+    private CategoryDto category;
+    private Long views;
+    private Integer confirmedRequests;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createdOn;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime publishedOn;
+    private String description;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime eventDate;
+    private UserShortDto initiator;
+    private LocationDto location;
+    private Boolean paid;
+    private Integer participantLimit;
+    private String state;
+    private Boolean requestModeration;
+    private String title;
 }
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-@Builder
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class EventShortDto {
-
-    Long id;
-    String annotation;
-    CategoryDto category;
-    Long confirmedRequests;
-    String eventDate;
-    UserShortDto initiator;
-    Boolean paid;
-    String title;
-    Long views;
+    private Long id;
+    private String annotation;
+    private CategoryDto category;
+    private Long views;
+    private Integer confirmedRequests;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime eventDate;
+    private UserShortDto initiator;
+    private Boolean paid;
+    private String title;
 }
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class LocationDto {
-
-    Float lat;
-    Float lon;
+    @Min(-90)
+    @Max(90)
+    @NotNull
+    private Float lat;
+    @Min(-180)
+    @Max(180)
+    @NotNull
+    private Float lon;
 }
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-@Builder
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class NewEventDto {
-
-    @NotBlank(message = "Краткое описание события должно быть указано.")
-    @Length(min = 20, max = 2000, message = "Минимальная длина аннотации 20 символов, максимальная 2000 символов.")
-    String annotation;
-
-    @NotNull(message = "id категории, к которой относится событие, должно быть указано.")
-    Long category;
-
-    @NotBlank(message = "Полное описание события должно быть указано.")
-    @Length(min = 20, max = 7000, message = "Минимальная длина описания 20 символов, максимальная 7000 символов.")
-    String description;
-
-    @NotNull(message = "Дата и время на которые намечено событие должны быть указаны")
-    @DateTimeStart(value = 2, message = "Дата и время на которые намечено событие не может быть раньше, чем через два часа от текущего момента")
-    String eventDate;
-
-    @NotNull(message = "Широта и долгота места проведения события должны быть указаны.")
-    LocationDto location;
-
-    Boolean paid;
-
-    @PositiveOrZero(message = "Количество участников должно быть неотрицательным числом.")
-    Integer participantLimit;
-
-    Boolean requestModeration;
-
-    @NotBlank(message = "Заголовок события должен быть указан.")
-    @Length(min = 3, max = 120, message = "Минимальная длина заголовка 3 символа, максимальная 120 символов.")
-    String title;
+    @NotBlank
+    @Length(max = 2000, min = 20)
+    private String annotation;
+    @NotNull
+    @Positive
+    private Long category;
+    @NotBlank
+    @Length(max = 7000, min = 20)
+    private String description;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime eventDate;
+    @NotNull
+    @Valid
+    private LocationDto location;
+    private Boolean paid = false;
+    @PositiveOrZero
+    private Integer participantLimit = 0;
+    private Boolean requestModeration = true;
+    @NotNull
+    @Length(min = 3, max = 120)
+    private String title;
 }
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-@Builder
-@FieldDefaults(level = AccessLevel.PRIVATE)
-public class PatchEventDto {
-
-    @Length(min = 20, max = 2000, message = "Минимальная длина аннотации 20 символов, максимальная 2000 символов.")
-    String annotation;
-
-    @Positive
-    Long category;
-
-    @Length(min = 20, max = 7000, message = "Минимальная длина описания 20 символов, максимальная 7000 символов.")
-    String description;
-
-    @FutureOrPresent
-    String eventDate;
-
-    LocationDto location;
-
-    Boolean paid;
-
-    @Positive
-    Integer participantLimit;
-
-    Boolean requestModeration;
-    String stateAction;
-
-    @Length(min = 3, max = 120, message = "Минимальная длина заголовка 3 символа, максимальная 120 символов.")
-    String title;
+@AllArgsConstructor
+public class UpdateEventAdminRequest {
+    @Size(min = 20, max = 2000)
+    private String annotation;
+    private Long category;
+    @Size(min = 20, max = 7000)
+    private String description;
+    @Future
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime eventDate;
+    @Valid
+    private LocationDto location;
+    private Boolean paid;
+    @PositiveOrZero
+    private Integer participantLimit;
+    private Boolean requestModeration;
+    private String stateAction;
+    @Size(min = 3, max = 120)
+    private String title;
 }
 
-public enum State {
-    PENDING,
-    PUBLISHED,
-    CANCELED
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class UpdateEventUserRequest {
+    @Length(min = 20, max = 2000)
+    private String annotation;
+    private Long category;
+    @Length(min = 20, max = 7000)
+    private String description;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime eventDate;
+    @Valid
+    private LocationDto location;
+    private Boolean paid;
+    @PositiveOrZero
+    private Integer participantLimit;
+    private Boolean requestModeration;
+    private String stateAction;
+    @Size(min = 3, max = 120)
+    private String title;
+}
+
+public enum EventState {
+    PENDING, PUBLISHED, CANCELED;
+
+    @Override
+    public String toString() {
+        return name();
+    }
 }
 ```
 
@@ -870,19 +790,20 @@ public enum State {
         path = "/events"
 )
 public interface EventServiceClient {
-
+    @RequestMapping(
+            method = RequestMethod.HEAD,
+            value = "/categories/{catId}/exists"
+    )
+    Boolean categoryHasEvents(@PathVariable Long catId);
     @GetMapping("/client/short/{id}")
-    EventShortDto getEventShortDtoById(@PathVariable @Positive Long id);
-
+    EventShortDto getEventShortDtoByIdClient(@PathVariable @Positive Long id);
     @GetMapping("/client/full/{id}")
     EventFullDto getEventFullDtoByIdClient(@PathVariable @Positive Long id);
-
     @GetMapping("/client/validate/{eventId}")
     void validateEventExistingById(@PathVariable @Positive Long eventId);
-
     @GetMapping("/client/validate/category/{categoryId}")
-    void validateCategoryHasNoEvents(@PathVariable @Positive Long categoryId);
-
+    void validateCategoryHasNoEvents(
+            @PathVariable @Positive Long categoryId);
     @GetMapping("/client/find/all")
     Set<EventShortDto> getEventShortDtoSetByIds(@RequestParam Set<Long> eventIds);
 }
@@ -990,10 +911,10 @@ spring:
           uri: lb://event-service  # Load Balanced
           predicates:
             - Path=/events/**,/users/{userId}/events/**
-        - id: review-service  
-          uri: lb://review-service
+        - id: comment-service  
+          uri: lb://comment-service
           predicates:
-            - Path=/reviews/**,/users/{userId}/reviews/**
+            - Path=/comments/**,/users/{userId}/comments/**
 ```
 
 **Ключевые особенности:**
@@ -1065,31 +986,13 @@ public List<EventShortDto> getEvents() {
 
 ### Модель данных (Stat)
 ```java
-@Data
 @Entity
-@Builder
-@Table(name = "statistics")
-@FieldDefaults(level = AccessLevel.PRIVATE)
-@AllArgsConstructor
-@NoArgsConstructor
-public class EndpointHit {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+public class Stat {
     Long id;
-
-    @Column(name = "app", nullable = false)
-    String app;
-
-    @Column(name = "uri", nullable = false)
-    String uri;
-
-    @Column(name = "ip", nullable = false)
-    String ip;
-
-    @Column(name = "created", nullable = false)
-    LocalDateTime created;
+    String app;   
+    String uri;   
+    String ip;   
+    LocalDateTime timestamp;
 }
 ```
 
@@ -1098,6 +1001,6 @@ public class EndpointHit {
 1. Инфраструктура (30s)
    docker-compose up eureka-server config-server postgres
 2. Core сервисы (2min)
-   docker-compose up event-service review-service user-service category-service
+   docker-compose up event-service comment-service user-service category-service
 3. Остальные (1min)
    docker-compose up request-service compilation-service stats-server gateway-server
