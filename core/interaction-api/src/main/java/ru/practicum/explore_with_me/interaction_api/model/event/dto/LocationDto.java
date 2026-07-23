@@ -1,15 +1,22 @@
 package ru.practicum.explore_with_me.interaction_api.model.event.dto;
 
-import lombok.*;
-import lombok.experimental.FieldDefaults;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class LocationDto {
-
-    Float lat;
-    Float lon;
+    @Min(-90)
+    @Max(90)
+    @NotNull
+    private Float lat;
+    @Min(-180)
+    @Max(180)
+    @NotNull
+    private Float lon;
 }

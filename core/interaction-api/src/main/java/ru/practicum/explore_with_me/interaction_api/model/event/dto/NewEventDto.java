@@ -1,46 +1,41 @@
 package ru.practicum.explore_with_me.interaction_api.model.event.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
-import ru.practicum.explore_with_me.interaction_api.model.event.annotations.DateTimeStart;
+
+import java.time.LocalDateTime;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-@Builder
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class NewEventDto {
-
-    @NotBlank(message = "Краткое описание события должно быть указано.")
-    @Length(min = 20, max = 2000, message = "Минимальная длина аннотации 20 символов, максимальная 2000 символов.")
-    String annotation;
-
-    @NotNull(message = "id категории, к которой относится событие, должно быть указано.")
-    Long category;
-
-    @NotBlank(message = "Полное описание события должно быть указано.")
-    @Length(min = 20, max = 7000, message = "Минимальная длина описания 20 символов, максимальная 7000 символов.")
-    String description;
-
-    @NotNull(message = "Дата и время на которые намечено событие должны быть указаны")
-    @DateTimeStart(value = 2, message = "Дата и время на которые намечено событие не может быть раньше, чем через два часа от текущего момента")
-    String eventDate;
-
-    @NotNull(message = "Широта и долгота места проведения события должны быть указаны.")
-    LocationDto location;
-
-    Boolean paid;
-
-    @PositiveOrZero(message = "Количество участников должно быть неотрицательным числом.")
-    Integer participantLimit;
-
-    Boolean requestModeration;
-
-    @NotBlank(message = "Заголовок события должен быть указан.")
-    @Length(min = 3, max = 120, message = "Минимальная длина заголовка 3 символа, максимальная 120 символов.")
-    String title;
+    @NotBlank
+    @Length(max = 2000, min = 20)
+    private String annotation;
+    @NotNull
+    @Positive
+    private Long category;
+    @NotBlank
+    @Length(max = 7000, min = 20)
+    private String description;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime eventDate;
+    @NotNull
+    @Valid
+    private LocationDto location;
+    private Boolean paid = false;
+    @PositiveOrZero
+    private Integer participantLimit = 0;
+    private Boolean requestModeration = true;
+    @NotNull
+    @Length(min = 3, max = 120)
+    private String title;
 }

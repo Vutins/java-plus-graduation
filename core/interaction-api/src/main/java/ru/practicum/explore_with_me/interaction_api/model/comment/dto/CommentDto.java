@@ -1,20 +1,22 @@
 package ru.practicum.explore_with_me.interaction_api.model.comment.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
-import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 
-@Data
-@Builder
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@Builder
 public class CommentDto {
-
-    Long id;
-    Long commentatorId;
-    Long eventId;
-    LocalDateTime created;
-    String text;
+    private Long id;
+    private String text;
+    private Long eventId;
+    private Long authorId;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createdOn;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime lastUpdatedOn;
 }

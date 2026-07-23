@@ -99,13 +99,8 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>ru.practicum.explore_with_me.comment.CommentStarter</mainClass>
+                    <mainClass>ru.practicum.explore_with_me.comment.CommentServiceStarter</mainClass>
                 </configuration>
             </plugin>
 

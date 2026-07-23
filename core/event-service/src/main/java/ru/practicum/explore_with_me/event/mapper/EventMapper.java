@@ -1,126 +1,94 @@
 package ru.practicum.explore_with_me.event.mapper;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
-import ru.practicum.explore_with_me.event.entity.Event;
-import ru.practicum.explore_with_me.interaction_api.model.category.client.CategoryServiceClient;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import ru.practicum.explore_with_me.event.dao.Event;
+import ru.practicum.explore_with_me.event.dao.Location;
+import ru.practicum.explore_with_me.interaction_api.model.category.dto.CategoryDto;
 import ru.practicum.explore_with_me.interaction_api.model.event.dto.EventFullDto;
 import ru.practicum.explore_with_me.interaction_api.model.event.dto.EventShortDto;
+import ru.practicum.explore_with_me.interaction_api.model.event.dto.LocationDto;
 import ru.practicum.explore_with_me.interaction_api.model.event.dto.NewEventDto;
-import ru.practicum.explore_with_me.interaction_api.model.event.enums.State;
-import ru.practicum.explore_with_me.interaction_api.model.user.client.UserServiceClient;
+import ru.practicum.explore_with_me.interaction_api.model.user.dto.UserShortDto;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Map;
+@Mapper(componentModel = "spring")
+public interface EventMapper {
 
-@Component
-@RequiredArgsConstructor
-public class EventMapper {
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "categoryId", ignore = true)
+    @Mapping(target = "initiatorId", ignore = true)
+    @Mapping(target = "confirmedRequests", ignore = true)
+    @Mapping(target = "createdOn", ignore = true)
+    @Mapping(target = "publishedOn", ignore = true)
+    @Mapping(target = "state", ignore = true)
+    @Mapping(target = "views", ignore = true)
+    Event toEvent(NewEventDto newEventDto);
 
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    private final LocationMapper locationMapper;
-    private final CategoryServiceClient categoryServiceClient;
-    private final UserServiceClient userServiceClient;
+    @Mapping(target = "category.id", source = "categoryId")
+    @Mapping(target = "initiator.id", source = "initiatorId")
+    EventShortDto toEventShortDtoв(Event event);
 
-    public EventFullDto toFullDto(Event event) {
-        EventFullDto eventFullDto = EventFullDto.builder()
-                .id(event.getId())
-                .annotation(event.getAnnotation())
-                .category(categoryServiceClient.getCategoryById(event.getCategoryId()))
-                .description(event.getDescription())
-                .initiator(userServiceClient.getUserShortById(event.getInitiatorId()))
-                .location(locationMapper.toDto(event.getLocation()))
-                .paid(event.getPaid())
-                .participantLimit(event.getParticipantLimit())
-                .requestModeration(event.getRequestModeration())
-                .state(String.valueOf(event.getState()))
-                .title(event.getTitle())
-                .build();
-
-        if (event.getCreatedOn() != null) {
-            eventFullDto.setCreatedOn(formatter.format(event.getCreatedOn()));
+    default Location toLocation(LocationDto dto) {
+        if (dto == null) {
+            return null;
         }
-
-        if (event.getEventDate() != null) {
-            eventFullDto.setEventDate(formatter.format(event.getEventDate()));
-        }
-
-        if (event.getPublishedOn() != null) {
-            eventFullDto.setPublishedOn(formatter.format(event.getPublishedOn()));
-        }
-
-        return eventFullDto;
+        Location location = new Location();
+        location.setLat(dto.getLat());
+        location.setLon(dto.getLon());
+        return location;
     }
 
-    public List<EventShortDto> toListShortDtoWithViewsAndRequests(
-            List<Event> events, Map<Long, Long> viewsForEvents, Map<Long, Long> requests) {
-        return events.stream()
-                .map(e -> {
-                    EventShortDto eventShortDto = toShortDto(e);
-                    eventShortDto.setViews(viewsForEvents.getOrDefault(e.getId(), 0L));
-                    eventShortDto.setConfirmedRequests(requests.getOrDefault(e.getId(), 0L));
-                    return eventShortDto;
-                })
-                .toList();
+    default LocationDto toLocationDto(Location location) {
+        if (location == null) {
+            return null;
+        }
+        LocationDto locationDto = new LocationDto();
+        locationDto.setLat(location.getLat());
+        locationDto.setLon(location.getLon());
+        return locationDto;
     }
 
-    public List<EventFullDto> toListFullDtoWithViewsAndRequests(
-            List<Event> events, Map<Long, Long> viewsForEvents, Map<Long, Long> requests) {
-        return events.stream()
-                .map(e -> {
-                    EventFullDto eventFullDto = toFullDto(e);
-                    eventFullDto.setViews(viewsForEvents.getOrDefault(e.getId(), 0L));
-                    eventFullDto.setConfirmedRequests(requests.getOrDefault(e.getId(), 0L));
-                    return eventFullDto;
-                })
-                .toList();
+    default EventFullDto toEventFullDto(
+            Event event,
+            CategoryDto categoryDto,
+            UserShortDto userShortDto
+    ) {
+        EventFullDto dto = new EventFullDto();
+        dto.setId(event.getId());
+        dto.setAnnotation(event.getAnnotation());
+        dto.setDescription(event.getDescription());
+        dto.setEventDate(event.getEventDate());
+        dto.setCreatedOn(event.getCreatedOn());
+        dto.setPublishedOn(event.getPublishedOn());
+        dto.setPaid(event.getPaid());
+        dto.setParticipantLimit(event.getParticipantLimit());
+        dto.setRequestModeration(event.getRequestModeration());
+        dto.setTitle(event.getTitle());
+
+        dto.setState(event.getState() != null ? event.getState().toString() : null);
+
+        dto.setCategory(categoryDto);
+        dto.setInitiator(userShortDto);
+
+        if (event.getLocation() != null) {
+            dto.setLocation(toLocationDto(event.getLocation()));
+        }
+
+        return dto;
     }
 
-    public EventShortDto toShortDto(Event event) {
-        return EventShortDto.builder()
-                .id(event.getId())
-                .annotation(event.getAnnotation())
-                .category(categoryServiceClient.getCategoryById(event.getCategoryId()))
-                .eventDate(formatter.format(event.getEventDate()))
-                .initiator(userServiceClient.getUserShortById(event.getInitiatorId()))
-                .paid(event.getPaid())
-                .title(event.getTitle())
-                .build();
-    }
+    default EventShortDto toEventShortDto(Event event, CategoryDto categoryDto, UserShortDto userShortDto) {
+        EventShortDto dto = new EventShortDto();
+        dto.setId(event.getId());
+        dto.setCategory(categoryDto);
+        dto.setInitiator(userShortDto);
+        dto.setAnnotation(event.getAnnotation());
+        dto.setConfirmedRequests(event.getConfirmedRequests());
+        dto.setEventDate(event.getEventDate());
+        dto.setPaid(event.getPaid());
+        dto.setTitle(event.getTitle());
+        dto.setViews(event.getViews());
 
-    public Event toEntity(NewEventDto newEventDto, Long initiatorId, Long categoryId) {
-        Event event = Event.builder()
-                .annotation(newEventDto.getAnnotation())
-                .categoryId(categoryId)
-                .initiatorId(initiatorId)
-                .location(locationMapper.toLocation(newEventDto.getLocation()))
-                .description(newEventDto.getDescription())
-                .createdOn(LocalDateTime.now())
-                .eventDate(LocalDateTime.parse(newEventDto.getEventDate(), formatter))
-                .state(State.PENDING)
-                .title(newEventDto.getTitle())
-                .build();
-
-        if (newEventDto.getPaid() != null) {
-            event.setPaid(newEventDto.getPaid());
-        } else {
-            event.setPaid(false);
-        }
-
-        if (newEventDto.getParticipantLimit() != null) {
-            event.setParticipantLimit(newEventDto.getParticipantLimit());
-        } else {
-            event.setParticipantLimit(0);
-        }
-
-        if (newEventDto.getRequestModeration() != null) {
-            event.setRequestModeration(newEventDto.getRequestModeration());
-        } else {
-            event.setRequestModeration(true);
-        }
-
-        return event;
+        return dto;
     }
 }

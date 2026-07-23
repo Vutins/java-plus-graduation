@@ -1,17 +1,24 @@
 package ru.practicum.explore_with_me.interaction_api.model.request.dto;
 
-import lombok.*;
-import lombok.experimental.FieldDefaults;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ParticipationRequestDto {
-    String created;
-    Long event;
-    Long id;
-    Long requester;
-    String status;
+    private Long id;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime created;
+
+    private Long event;
+
+    private Long requester;
+
+    private String status;
 }

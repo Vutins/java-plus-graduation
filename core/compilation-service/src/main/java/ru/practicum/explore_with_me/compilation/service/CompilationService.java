@@ -1,5 +1,6 @@
 package ru.practicum.explore_with_me.compilation.service;
 
+import org.springframework.data.domain.Pageable;
 import ru.practicum.explore_with_me.interaction_api.model.compilation.dto.CompilationDto;
 import ru.practicum.explore_with_me.interaction_api.model.compilation.dto.NewCompilationDto;
 import ru.practicum.explore_with_me.interaction_api.model.compilation.dto.UpdateCompilationRequest;
@@ -7,14 +8,13 @@ import ru.practicum.explore_with_me.interaction_api.model.compilation.dto.Update
 import java.util.List;
 
 public interface CompilationService {
+    CompilationDto createCompilation(NewCompilationDto newCompilationDto);
 
-    CompilationDto createNewCompilation(NewCompilationDto newCompilationDto);
+    void deleteCompilation(Long compId);
 
-    void deleteCompilation(long compId);
+    CompilationDto updateCompilation(Long compId, UpdateCompilationRequest updateRequest);
 
-    CompilationDto patchCompilation(long compId, UpdateCompilationRequest updateCompilationRequest);
+    List<CompilationDto> getCompilations(Boolean pinned, Pageable pageable);
 
-    CompilationDto getCompilationById(long compId);
-
-    List<CompilationDto> getCompilations(Boolean pinned, int from, int size);
+    CompilationDto getCompilationById(Long compId);
 }

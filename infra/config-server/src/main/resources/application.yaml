@@ -13,6 +13,7 @@ spring:
           searchLocations:
             - classpath:config/core/{application}
             - classpath:config/stats/{application}
+            - classpath:config/stats/telemetry/{application}
             - classpath:config/infra/{application}
 
 eureka:

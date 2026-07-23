@@ -1,36 +1,21 @@
 package ru.practicum.explore_with_me.comment.repository;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
-import ru.practicum.explore_with_me.comment.entity.Comment;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import ru.practicum.explore_with_me.comment.dao.Comment;
 
 import java.util.List;
 import java.util.Optional;
 
-@Repository
-public interface CommentRepository extends JpaRepository<Comment, Long> {
+public interface CommentRepository extends JpaRepository<Comment, Long>, JpaSpecificationExecutor<Comment> {
 
-    Page<Comment> findAllByEventId(Long eventId, Pageable pageable);
+    List<Comment> findAllByEventId(Long eventId, Pageable pageable);
 
-    @Query("SELECT r.comment " +
-            "FROM Reaction r " +
-            "WHERE r.voteType = :voteType " +
-            "GROUP BY r.comment " +
-            "ORDER BY COUNT(r) ASC")
-    Slice<Comment> getCommentsByAsc(String voteType, Pageable pageable);
+    Optional<Comment> findByIdAndAuthorId(Long id, Long authorId);
 
-    @Query("SELECT r.comment " +
-            "FROM Reaction r " +
-            "WHERE r.voteType = :voteType " +
-            "GROUP BY r.comment " +
-            "ORDER BY COUNT(r) DESC")
-    Slice<Comment> getCommentsByDesc(String voteType, Pageable pageable);
+    List<Comment> findAllByAuthorId(Long authorId);
 
-    Optional<Comment> findByIdAndCommentatorId(Long commentId, Long commentatorId);
+    Optional<Comment> findByEventIdAndAuthorId(Long eventId, Long authorId);
 
-    List<Comment> findAllByCommentatorId(Long commentatorId);
 }

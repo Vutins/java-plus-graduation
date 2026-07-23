@@ -1,15 +1,17 @@
 package ru.practicum.explore_with_me.interaction_api.model.category.dto;
 
-import lombok.*;
-import lombok.experimental.FieldDefaults;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class CategoryDto {
-
-    Long id;
-    String name;
+    private Long id;
+    @NotBlank
+    @Size(min = 1, max = 50)
+    private String name;
 }
