@@ -27,8 +27,6 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryMapper categoryMapper;
     private final EventServiceClient eventServiceClient;
 
-    private static final String serviceName = "[CATEGORY-SERVICE]";
-
     @Override
     @Transactional
     public CategoryDto createCategory(NewCategoryDto newCategoryDto) {
@@ -47,7 +45,7 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new NotFoundException("Category not found"));
 
-        log.debug("Запрос на получение event клиентом из deleteCategory сервиса {}", serviceName);
+        log.debug("Запрос на получение event клиентом из deleteCategory сервиса");
 
         try {
             eventServiceClient.validateCategoryHasNoEvents(categoryId);
