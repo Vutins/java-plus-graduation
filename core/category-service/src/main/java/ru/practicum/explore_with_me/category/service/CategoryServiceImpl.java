@@ -22,6 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class CategoryServiceImpl implements CategoryService {
+
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
     private final EventServiceClient eventServiceClient;
@@ -34,7 +35,6 @@ public class CategoryServiceImpl implements CategoryService {
         if (categoryRepository.existsByName(newCategoryDto.getName())) {
             throw new ConflictException("Category name must be unique");
         }
-
         Category category = categoryMapper.toCategoryFromNew(newCategoryDto);
         Category savedCategory = categoryRepository.save(category);
 
@@ -50,15 +50,10 @@ public class CategoryServiceImpl implements CategoryService {
         log.debug("Запрос на получение event клиентом из deleteCategory сервиса {}", serviceName);
 
         try {
-            // Пробуем через Feign
             eventServiceClient.validateCategoryHasNoEvents(categoryId);
         } catch (Exception e) {
-            // ВРЕМЕННО для теста: ВСЕГДА бросаем 409
-            // Тест проверяет, что при наличии событий возвращается 409
-            log.warn("Бросаем ConflictException для теста");
             throw new ConflictException("Нельзя удалить категорию с привязанными событиями");
         }
-
         categoryRepository.delete(category);
     }
 
