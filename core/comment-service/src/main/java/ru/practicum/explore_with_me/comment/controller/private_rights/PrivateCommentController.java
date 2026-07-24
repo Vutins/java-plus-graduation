@@ -7,10 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.explore_with_me.comment.service.CommentService;
 import ru.practicum.explore_with_me.interaction_api.model.comment.dto.NewCommentDto;
 import ru.practicum.explore_with_me.interaction_api.model.comment.dto.CommentDto;
 import ru.practicum.explore_with_me.interaction_api.model.comment.dto.UpdateCommentDto;
-import ru.practicum.explore_with_me.comment.service.private_rights.PrivateCommentService;
 
 import java.util.List;
 
@@ -21,7 +21,7 @@ import java.util.List;
 @RequestMapping("/users/{userId}/comments")
 public class PrivateCommentController {
 
-    private final PrivateCommentService commentService;
+    private final CommentService commentService;
 
     @PostMapping("/events/{eventId}")
     @ResponseStatus(HttpStatus.CREATED)

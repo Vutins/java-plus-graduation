@@ -15,6 +15,7 @@ import ru.practicum.explore_with_me.interaction_api.model.category.dto.NewCatego
 import ru.practicum.explore_with_me.interaction_api.model.event.client.EventServiceClient;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -83,5 +84,15 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categoryRepository.findById(catId)
                 .orElseThrow(() -> new NotFoundException("Category not found"));
         return categoryMapper.toCategoryDto(category);
+    }
+
+    @Override
+    public List<CategoryDto> getCategoriesByIds(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+        return categoryRepository.findAllById(ids).stream()
+                .map(categoryMapper::toCategoryDto)
+                .collect(Collectors.toList());
     }
 }

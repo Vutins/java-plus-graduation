@@ -27,4 +27,9 @@ public class PublicCategoryController {
     public CategoryDto getCategoryById(@PathVariable @Positive Long catId) {
         return categoryService.getCategoryById(catId);
     }
+
+    @GetMapping("/list")
+    public List<CategoryDto> getCategoriesByIds(@RequestParam List<Long> ids) {
+        return categoryService.getCategoriesByIds(ids);
+    }
 }

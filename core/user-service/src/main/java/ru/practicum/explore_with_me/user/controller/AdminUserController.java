@@ -50,4 +50,9 @@ public class AdminUserController {
     public void deleteUser(@PathVariable @Positive Long userId) {
         userService.deleteUser(userId);
     }
+
+    @GetMapping("/client/list")
+    public List<UserShortDto> getUsersShortByIds(@RequestParam List<Long> ids) {
+        return userService.getUsersShortByIds(ids);
+    }
 }

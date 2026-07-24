@@ -6,8 +6,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.explore_with_me.comment.service.CommentService;
 import ru.practicum.explore_with_me.interaction_api.model.comment.dto.CommentDto;
-import ru.practicum.explore_with_me.comment.service.admin_rights.AdminCommentService;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ import java.util.List;
 @RequestMapping("/admin/comments")
 public class AdminCommentController {
 
-    private final AdminCommentService commentService;
+    private final CommentService commentService;
 
     @GetMapping
     public List<CommentDto> getCommentsByAdmin(@RequestParam(required = false) String text,

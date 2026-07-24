@@ -16,4 +16,6 @@ public interface CategoryService {
     List<CategoryDto> getCategories(Pageable pageable);
 
     CategoryDto getCategoryById(Long catId);
+
+    List<CategoryDto> getCategoriesByIds(List<Long> ids);
 }

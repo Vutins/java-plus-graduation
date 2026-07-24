@@ -15,6 +15,7 @@ import ru.practicum.explore_with_me.user.mapper.UserMapper;
 import ru.practicum.explore_with_me.user.repository.UserRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -69,5 +70,15 @@ public class UserServiceImpl implements UserService {
     public void validateUserExistingById(Long userId) {
         if (!userRepository.existsById(userId))
             throw new NotFoundException("User with id=" + userId + " not found");
+    }
+
+    @Override
+    public List<UserShortDto> getUsersShortByIds(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+        return userRepository.findAllById(ids).stream()
+                .map(userMapper::toUserShortDto)
+                .collect(Collectors.toList());
     }
 }

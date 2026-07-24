@@ -26,6 +26,7 @@ import ru.practicum.explore_with_me.interaction_api.model.user.dto.UserShortDto;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -33,12 +34,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class PublicEventServiceImpl implements PublicEventService {
+
     private final EventRepository eventRepository;
     private final EventMapper eventMapper;
-
     private final UserServiceClient userServiceClient;
     private final CategoryServiceClient categoryServiceClient;
-
     private final StatsClient statsClient;
 
     @Override
@@ -47,45 +47,65 @@ public class PublicEventServiceImpl implements PublicEventService {
                                                Boolean onlyAvailable, String sort, Pageable pageable,
                                                HttpServletRequest request) {
         verifyRange(rangeStart, rangeEnd);
-        statsClient.hit(EndpointHitDto
-                .builder()
+        statsClient.hit(EndpointHitDto.builder()
                 .app("ewm-service")
                 .uri(request.getRequestURI())
                 .ip(request.getRemoteAddr())
                 .timestamp(LocalDateTime.now())
                 .build());
 
-        Specification<Event> spec = Specification.where(null);
+        Specification<Event> spec = buildSpecification(text, categories, paid, rangeStart, rangeEnd, onlyAvailable);
+        List<Event> events = eventRepository.findAll(spec, pageable).toList();
 
-        if (text != null && !text.isBlank())
-            spec = spec.and(searchText(text.toLowerCase()));
+        List<Long> categoryIds = events.stream().map(Event::getCategoryId).distinct().collect(Collectors.toList());
+        List<Long> initiatorIds = events.stream().map(Event::getInitiatorId).distinct().collect(Collectors.toList());
 
-        if (categories != null && !categories.isEmpty())
-            spec = spec.and(searchCategoryIn(categories));
+        Map<Long, CategoryDto> categoryMap = categoryServiceClient.getCategoriesByIds(categoryIds).stream()
+                .collect(Collectors.toMap(CategoryDto::getId, Function.identity()));
+        Map<Long, UserShortDto> userMap = userServiceClient.getUsersShortByIds(initiatorIds).stream()
+                .collect(Collectors.toMap(UserShortDto::getId, Function.identity()));
 
-        spec = spec.and(searchAfterDate(rangeStart));
+        Map<Long, Long> views = getEventsViews(events);
 
-        if (rangeEnd != null)
-            spec = spec.and(searchBeforeDate(rangeEnd));
-
-        if (onlyAvailable)
-            spec = spec.and(searchAvailable());
-
-        spec = spec.and(searchPublished());
-
-        List<Event> results = eventRepository.findAll(spec, pageable).toList();
-        Map<Long, Long> views = getEventsViews(results);
-
-        return results
-                .stream()
+        return events.stream()
                 .map(event -> {
-                    return eventMapper.toEventShortDto(
+                    EventShortDto dto = eventMapper.toEventShortDto(
                             event,
-                            categoryServiceClient.getCategoryById(event.getCategoryId()),
-                            userServiceClient.getUserShortDtoClientById(event.getInitiatorId()));
+                            categoryMap.get(event.getCategoryId()),
+                            userMap.get(event.getInitiatorId())
+                    );
+                    dto.setViews(views.getOrDefault(dto.getId(), 0L));
+                    return dto;
                 })
-                .peek(dto -> dto.setViews(views.getOrDefault(dto.getId(), 0L)))
-                .toList();
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Set<EventShortDto> getEventShortDtoSetByIds(Set<Long> eventIds) {
+        if (eventIds == null || eventIds.isEmpty()) {
+            return Set.of();
+        }
+        // Используем стандартный findAllById, возвращает List<Event>
+        List<Event> events = eventRepository.findAllById(eventIds);
+        if (events.isEmpty()) {
+            return Set.of();
+        }
+
+        List<Long> categoryIds = events.stream().map(Event::getCategoryId).distinct().collect(Collectors.toList());
+        List<Long> initiatorIds = events.stream().map(Event::getInitiatorId).distinct().collect(Collectors.toList());
+
+        Map<Long, CategoryDto> categoryMap = categoryServiceClient.getCategoriesByIds(categoryIds).stream()
+                .collect(Collectors.toMap(CategoryDto::getId, Function.identity()));
+        Map<Long, UserShortDto> userMap = userServiceClient.getUsersShortByIds(initiatorIds).stream()
+                .collect(Collectors.toMap(UserShortDto::getId, Function.identity()));
+
+        return events.stream()
+                .map(event -> eventMapper.toEventShortDto(
+                        event,
+                        categoryMap.get(event.getCategoryId()),
+                        userMap.get(event.getInitiatorId())
+                ))
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -112,19 +132,6 @@ public class PublicEventServiceImpl implements PublicEventService {
         CategoryDto categoryDto = categoryServiceClient.getCategoryById(event.getCategoryId());
 
         return eventMapper.toEventShortDto(event, categoryDto, userShortDto);
-    }
-
-    @Override
-    public Set<EventShortDto> getEventShortDtoSetByIds(Set<Long> eventIds) {
-        return eventRepository.findAllByIdIn(eventIds)
-                .stream()
-                .map(event -> {
-                    return eventMapper.toEventShortDto(
-                            event,
-                            categoryServiceClient.getCategoryById(event.getCategoryId()),
-                            userServiceClient.getUserShortDtoClientById(event.getInitiatorId()));
-                })
-                .collect(Collectors.toSet());
     }
 
     @Override
@@ -248,5 +255,25 @@ public class PublicEventServiceImpl implements PublicEventService {
     private Specification<Event> searchPublished() {
         return (root, query, criteriaBuilder) ->
                 criteriaBuilder.equal(root.get("state"), EventState.PUBLISHED);
+    }
+
+    private Specification<Event> buildSpecification(String text, List<Long> categories, Boolean paid,
+                                                    LocalDateTime rangeStart, LocalDateTime rangeEnd,
+                                                    Boolean onlyAvailable) {
+        Specification<Event> spec = Specification.where(null);
+        if (text != null && !text.isBlank()) {
+            spec = spec.and(searchText(text.toLowerCase()));
+        }
+        if (categories != null && !categories.isEmpty()) {
+            spec = spec.and(searchCategoryIn(categories));
+        }
+        spec = spec.and(searchAfterDate(rangeStart));
+        if (rangeEnd != null) {
+            spec = spec.and(searchBeforeDate(rangeEnd));
+        }
+        if (onlyAvailable) {
+            spec = spec.and(searchAvailable());
+        }
+        return spec.and(searchPublished());
     }
 }
