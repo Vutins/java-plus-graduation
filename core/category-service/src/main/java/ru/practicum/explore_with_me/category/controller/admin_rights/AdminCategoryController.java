@@ -19,6 +19,7 @@ import java.util.List;
 @RequestMapping("/admin/categories")
 @RequiredArgsConstructor
 public class AdminCategoryController {
+
     private final CategoryService categoryService;
 
     @PostMapping
