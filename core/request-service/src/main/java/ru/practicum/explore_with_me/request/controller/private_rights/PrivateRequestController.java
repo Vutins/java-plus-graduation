@@ -20,6 +20,7 @@ import java.util.Map;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class PrivateRequestController {
+
     private final RequestService participationRequestService;
 
     @GetMapping("/{userId}/events/{eventId}/requests")
