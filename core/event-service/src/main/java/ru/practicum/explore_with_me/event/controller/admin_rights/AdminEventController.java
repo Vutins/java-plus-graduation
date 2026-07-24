@@ -7,7 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.explore_with_me.event.service.admin_rights.AdminEventService;
+import ru.practicum.explore_with_me.event.service.EventService;
 import ru.practicum.explore_with_me.interaction_api.model.event.dto.EventFullDto;
 import ru.practicum.explore_with_me.interaction_api.model.event.dto.UpdateEventAdminRequest;
 
@@ -19,7 +19,8 @@ import java.util.List;
 @RequestMapping("/admin/events")
 @RequiredArgsConstructor
 public class AdminEventController {
-    private final AdminEventService adminEventService;
+
+    private final EventService eventService;
 
     @GetMapping
     public List<EventFullDto> getEvents(
@@ -30,13 +31,13 @@ public class AdminEventController {
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
             @RequestParam(defaultValue = "0") int from,
             @RequestParam(defaultValue = "10") int size) {
-        return adminEventService.getEventsForAdmin(users, states, categories, rangeStart, rangeEnd,
+        return eventService.getEventsForAdmin(users, states, categories, rangeStart, rangeEnd,
                 PageRequest.of(from / size, size));
     }
 
     @PatchMapping("/{eventId}")
     public EventFullDto updateEvent(@PathVariable @Positive Long eventId,
                                     @RequestBody @Valid UpdateEventAdminRequest updateRequest) {
-        return adminEventService.updateEventByAdmin(eventId, updateRequest);
+        return eventService.updateEventByAdmin(eventId, updateRequest);
     }
 }

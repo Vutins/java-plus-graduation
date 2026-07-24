@@ -2,8 +2,7 @@ package ru.practicum.explore_with_me.event.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.domain.Pageable;
-import ru.practicum.explore_with_me.interaction_api.model.event.dto.EventFullDto;
-import ru.practicum.explore_with_me.interaction_api.model.event.dto.EventShortDto;
+import ru.practicum.explore_with_me.interaction_api.model.event.dto.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,4 +26,18 @@ public interface EventService {
     void validateEventExistingById(Long eventId);
 
     void validateCategoryHasNoEvents(Long categoryId);
+
+    List<EventShortDto> getEventsByUser(Long userId, Pageable pageable);
+
+    EventFullDto createEvent(Long userId, NewEventDto newEventDto);
+
+    EventFullDto getEventByUser(Long userId, Long eventId);
+
+    EventFullDto updateEventByUser(Long userId, Long eventId, UpdateEventUserRequest updateRequest);
+
+    List<EventFullDto> getEventsForAdmin(List<Long> users, List<String> states,
+                                         List<Long> categories, LocalDateTime rangeStart,
+                                         LocalDateTime rangeEnd, Pageable pageable);
+
+    EventFullDto updateEventByAdmin(Long eventId, UpdateEventAdminRequest updateRequest);
 }

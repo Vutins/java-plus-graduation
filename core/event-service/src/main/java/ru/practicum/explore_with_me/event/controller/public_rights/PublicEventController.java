@@ -8,8 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.explore_with_me.event.service.public_rights.PublicEventService;
-import ru.practicum.explore_with_me.interaction_api.model.compilation.dto.NewCompilationDto;
+import ru.practicum.explore_with_me.event.service.EventService;
 import ru.practicum.explore_with_me.interaction_api.model.event.dto.EventFullDto;
 import ru.practicum.explore_with_me.interaction_api.model.event.dto.EventShortDto;
 
@@ -22,7 +21,8 @@ import java.util.Set;
 @RequestMapping("/events")
 @RequiredArgsConstructor
 public class PublicEventController {
-    private final PublicEventService publicEventService;
+    
+    private final EventService eventService;
 
     @GetMapping
     public List<EventShortDto> getEvents(
@@ -36,38 +36,38 @@ public class PublicEventController {
             @PositiveOrZero @RequestParam(defaultValue = "0") int from,
             @Positive @RequestParam(defaultValue = "10") int size,
             HttpServletRequest httpRequest) {
-        return publicEventService.getEventsPublic(text, categories, paid, rangeStart, rangeEnd,
+        return eventService.getEventsPublic(text, categories, paid, rangeStart, rangeEnd,
                 onlyAvailable, sort, PageRequest.of(from / size, size), httpRequest);
     }
 
     @GetMapping("/{id}")
     public EventFullDto getEventById(@PathVariable @Positive Long id,
                                      HttpServletRequest httpRequest) {
-        return publicEventService.getEventById(id, httpRequest);
+        return eventService.getEventById(id, httpRequest);
     }
 
     @GetMapping("/client/short/{id}")
     public EventShortDto getEventShortDtoByIdClient(@PathVariable @Positive Long id) {
-        return publicEventService.getEventShortDtoByIdClient(id);
+        return eventService.getEventShortDtoByIdClient(id);
     }
 
     @GetMapping("/client/full/{id}")
     EventFullDto getEventFullDtoByIdClient(@PathVariable @Positive Long id) {
-        return publicEventService.getEventFullDtoByIdClient(id);
+        return eventService.getEventFullDtoByIdClient(id);
     }
 
     @GetMapping("/client/validate/{eventId}")
     public void validateEventExistingById(@PathVariable @Positive Long eventId) {
-        publicEventService.validateEventExistingById(eventId);
+        eventService.validateEventExistingById(eventId);
     }
 
     @GetMapping("/client/validate/category/{categoryId}")
     public void validateCategoryHasNoEvents(@PathVariable @Positive Long categoryId) {
-        publicEventService.validateCategoryHasNoEvents(categoryId);
+        eventService.validateCategoryHasNoEvents(categoryId);
     }
 
     @GetMapping("/client/find/all")
     public Set<EventShortDto> getEventShortDtoSetByIds(@RequestParam Set<Long> eventIds) {
-        return publicEventService.getEventShortDtoSetByIds(eventIds);
+        return eventService.getEventShortDtoSetByIds(eventIds);
     }
 }
