@@ -17,6 +17,6 @@ public interface UserServiceClient {
     @GetMapping("/client/exist/{userId}")
     void validateUserExistingById(@PathVariable Long userId);
 
-    @GetMapping("/admin/users/client/list")
+    @GetMapping("/client/list")
     List<UserShortDto> getUsersShortByIds(@RequestParam("ids") List<Long> ids);
 }
