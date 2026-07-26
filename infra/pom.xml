@@ -17,5 +17,4 @@
         <module>discovery-server</module>
         <module>gateway-server</module>
     </modules>
-
 </project>

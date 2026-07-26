@@ -1,14 +1,236 @@
-services:
-  stats-server:
-    ports:
-      - "9090:9090"
+version: '3.8'
 
+x-common-variables: &common-variables
+  SPRING_PROFILES_ACTIVE: docker
+  EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
+  # КРИТИЧЕСКИ ВАЖНО для Docker: регистрируем сервисы по IP, а не по hostname
+  EUREKA_INSTANCE_PREFER_IP_ADDRESS: "true"
+  EUREKA_INSTANCE_INSTANCE_ID: "${COMPOSE_PROJECT_NAME}-${SERVICE_NAME}:${RANDOM}"
+  CONFIG_SERVER_URL: http://config-server:8888
+  SPRING_DATASOURCE_USERNAME: dbuser
+  SPRING_DATASOURCE_PASSWORD: 12345
+
+services:
+  # --- DISCOVERY SERVER ---
+  discovery-server:
+    build: ./infra/discovery-server
+    container_name: discovery-server
+    ports:
+      - "8761:8761"
+    environment:
+      SERVICE_NAME: discovery-server
+    restart: unless-stopped
+
+  # --- CONFIG SERVER ---
+  config-server:
+    build: ./infra/config-server
+    container_name: config-server
+    environment:
+      # КРИТИЧЕСКИ ВАЖНО: config-server должен работать в профиле native, а не docker
+      SPRING_PROFILES_ACTIVE: native
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
+      EUREKA_INSTANCE_PREFER_IP_ADDRESS: "true"
+      SERVICE_NAME: config-server
+    depends_on:
+      discovery-server:
+        condition: service_started
+    restart: unless-stopped
+
+  # --- DATABASES ---
   stats-db:
     image: postgres:16.1
+    container_name: stats-db
+    environment:
+      POSTGRES_DB: stats
+      POSTGRES_USER: dbuser
+      POSTGRES_PASSWORD: 12345
+    ports:
+      - "5432:5432"
+    volumes:
+      - stats-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dbuser -d stats"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  ewm-service:
+  core-db:
+    image: postgres:16.1
+    container_name: core-db
+    environment:
+      POSTGRES_DB: core_services
+      POSTGRES_USER: dbuser
+      POSTGRES_PASSWORD: 12345
+    ports:
+      - "5433:5432"
+    volumes:
+      - core-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dbuser -d core_services"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # --- STATS SERVICE ---
+  stats-server:
+    build:
+      context: ./stats-service/stats-server
+      dockerfile: Dockerfile
+    container_name: stats-server
+    environment:
+      <<: *common-variables
+      SERVICE_NAME: stats-server
+      SPRING_DATASOURCE_URL: jdbc:postgresql://stats-db:5432/stats
+    ports:
+      - "9090:9090"
+    depends_on:
+      stats-db:
+        condition: service_healthy
+      discovery-server:
+        condition: service_started
+      config-server:
+        condition: service_started
+    restart: unless-stopped
+
+  # --- CORE SERVICES ---
+  user-service:
+    build:
+      context: ./core/user-service
+      dockerfile: Dockerfile
+    container_name: user-service
+    environment:
+      <<: *common-variables
+      SERVICE_NAME: user-service
+      SPRING_DATASOURCE_URL: jdbc:postgresql://core-db:5432/core_services?currentSchema=user_service
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA: user_service
+    depends_on:
+      core-db:
+        condition: service_healthy
+      discovery-server:
+        condition: service_started
+      config-server:
+        condition: service_started
+    restart: unless-stopped
+
+  category-service:
+    build:
+      context: ./core/category-service
+      dockerfile: Dockerfile
+    container_name: category-service
+    environment:
+      <<: *common-variables
+      SERVICE_NAME: category-service
+      SPRING_DATASOURCE_URL: jdbc:postgresql://core-db:5432/core_services?currentSchema=category_service
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA: category_service
+    depends_on:
+      core-db:
+        condition: service_healthy
+      discovery-server:
+        condition: service_started
+      config-server:
+        condition: service_started
+    restart: unless-stopped
+
+  event-service:
+    build:
+      context: ./core/event-service
+      dockerfile: Dockerfile
+    container_name: event-service
+    environment:
+      <<: *common-variables
+      SERVICE_NAME: event-service
+      SPRING_DATASOURCE_URL: jdbc:postgresql://core-db:5432/core_services?currentSchema=event_service
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA: event_service
+    depends_on:
+      core-db:
+        condition: service_healthy
+      discovery-server:
+        condition: service_started
+      config-server:
+        condition: service_started
+    restart: unless-stopped
+
+  request-service:
+    build:
+      context: ./core/request-service
+      dockerfile: Dockerfile
+    container_name: request-service
+    environment:
+      <<: *common-variables
+      SERVICE_NAME: request-service
+      SPRING_DATASOURCE_URL: jdbc:postgresql://core-db:5432/core_services?currentSchema=request_service
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA: request_service
+    depends_on:
+      core-db:
+        condition: service_healthy
+      discovery-server:
+        condition: service_started
+      config-server:
+        condition: service_started
+    restart: unless-stopped
+
+  compilation-service:
+    build:
+      context: ./core/compilation-service
+      dockerfile: Dockerfile
+    container_name: compilation-service
+    environment:
+      <<: *common-variables
+      SERVICE_NAME: compilation-service
+      SPRING_DATASOURCE_URL: jdbc:postgresql://core-db:5432/core_services?currentSchema=compilation_service
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA: compilation_service
+    depends_on:
+      core-db:
+        condition: service_healthy
+      discovery-server:
+        condition: service_started
+      config-server:
+        condition: service_started
+    restart: unless-stopped
+
+  comment-service:
+    build:
+      context: ./core/comment-service
+      dockerfile: Dockerfile
+    container_name: comment-service
+    environment:
+      <<: *common-variables
+      SERVICE_NAME: comment-service
+      SPRING_DATASOURCE_URL: jdbc:postgresql://core-db:5432/core_services?currentSchema=comment_service
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA: comment_service
+    depends_on:
+      core-db:
+        condition: service_healthy
+      discovery-server:
+        condition: service_started
+      config-server:
+        condition: service_started
+    restart: unless-stopped
+
+  # --- GATEWAY ---
+  gateway-server:
+    build:
+      context: ./infra/gateway-server
+      dockerfile: Dockerfile
+    container_name: gateway-server
     ports:
       - "8080:8080"
+    environment:
+      <<: *common-variables
+      SERVICE_NAME: gateway-server
+    depends_on:
+      discovery-server:
+        condition: service_started
+      config-server:
+        condition: service_started
+    restart: unless-stopped
 
-  ewm-db:
-    image: postgres:16.1
+volumes:
+  stats-db-data:
+  core-db-data:
