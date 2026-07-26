@@ -17,6 +17,7 @@
         <module>stats-server</module>
         <module>stats-client</module>
         <module>stats-dto</module>
+        <module>telemetry</module>
     </modules>
 
     <dependencies>
