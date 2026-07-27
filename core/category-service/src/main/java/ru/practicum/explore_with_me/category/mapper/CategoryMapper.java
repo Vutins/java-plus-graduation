@@ -9,7 +9,5 @@ import ru.practicum.explore_with_me.interaction_api.model.category.dto.NewCatego
 public interface CategoryMapper {
     CategoryDto toCategoryDto(Category category);
 
-    Category toCategory(CategoryDto categoryDto);
-
     Category toCategoryFromNew(NewCategoryDto newCategoryDto);
 }

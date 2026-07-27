@@ -24,10 +24,6 @@ public interface EventMapper {
     @Mapping(target = "views", ignore = true)
     Event toEvent(NewEventDto newEventDto);
 
-    @Mapping(target = "category.id", source = "categoryId")
-    @Mapping(target = "initiator.id", source = "initiatorId")
-    EventShortDto toEventShortDtoв(Event event);
-
     default Location toLocation(LocationDto dto) {
         if (dto == null) {
             return null;

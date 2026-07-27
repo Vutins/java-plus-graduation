@@ -1,7 +1,6 @@
 package ru.practicum.explore_with_me.request.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import ru.practicum.explore_with_me.interaction_api.model.request.RequestStatus;
@@ -26,12 +25,4 @@ public interface ParticipationRequestRepository extends JpaRepository<Participat
     List<ParticipationRequest> findByEventIdAndStatus(Long eventId, RequestStatus status);
 
     List<ParticipationRequest> findAllByEventIdInAndStatus(List<Long> eventIds, RequestStatus status);
-
-    @Modifying
-    @Query("UPDATE ParticipationRequest pr SET pr.status = :status WHERE pr.id IN :requestIds")
-    void updateStatusForRequests(@Param("requestIds") List<Long> requestIds, @Param("status") RequestStatus status);
-
-    @Modifying
-    @Query("UPDATE ParticipationRequest pr SET pr.status = :status WHERE pr.eventId = :eventId AND pr.status = :currentStatus")
-    void updateStatusForPendingRequests(@Param("eventId") Long eventId, @Param("currentStatus") RequestStatus currentStatus, @Param("status") RequestStatus status);
 }

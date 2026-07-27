@@ -13,11 +13,6 @@ import java.util.Set;
         path = "/events"
 )
 public interface EventServiceClient {
-    @RequestMapping(
-            method = RequestMethod.HEAD,
-            value = "/categories/{catId}/exists"
-    )
-    Boolean categoryHasEvents(@PathVariable Long catId);
 
     @GetMapping("/client/short/{id}")
     EventShortDto getEventShortDtoByIdClient(@PathVariable @Positive Long id);
