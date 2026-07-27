@@ -230,7 +230,11 @@ public class EventServiceImpl implements EventService {
     private Specification<Event> buildSpecification(String text, List<Long> categories, Boolean paid,
                                                     LocalDateTime rangeStart, LocalDateTime rangeEnd,
                                                     Boolean onlyAvailable) {
+
         Specification<Event> spec = Specification.where(null);
+        if (paid != null) {
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("paid"), paid));
+        }
         if (text != null && !text.isBlank()) {
             spec = spec.and(searchText(text.toLowerCase()));
         }
