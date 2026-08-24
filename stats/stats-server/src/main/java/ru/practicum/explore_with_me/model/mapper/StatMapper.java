@@ -12,6 +12,4 @@ public interface StatMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(source = "timestamp", target = "created")
     Stat toStat(EndpointHitDto endpointHitDto);
-
-    StatResponseDto toStatResponseDto(Stat stat);
 }
